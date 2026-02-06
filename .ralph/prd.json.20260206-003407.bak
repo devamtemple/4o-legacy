@@ -1,0 +1,565 @@
+{
+  "feature": {
+    "name": "Mission Polish, Upload Guardrails, Training Opt-Out & Testing",
+    "ideaFile": "docs/ideas/mission-polish-and-testing.md",
+    "branch": "feature/mission-polish-and-testing",
+    "status": "pending"
+  },
+
+  "metadata": {
+    "createdAt": "2026-02-05T12:00:00Z",
+    "estimatedStories": 8,
+    "complexity": "medium"
+  },
+
+  "stories": [
+    {
+      "id": "TASK-001",
+      "type": "backend",
+      "title": "Add unit tests for parseChat and decay functions",
+      "priority": 1,
+      "passes": false,
+
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "testing": "Jest 30 + ts-jest"
+      },
+
+      "constraints": [
+        "Test match pattern: **/__tests__/**/*.test.ts",
+        "Use existing jest.config.js and jest.setup.ts",
+        "Import from @/ path alias"
+      ],
+
+      "files": {
+        "create": [
+          "src/__tests__/parseChat.test.ts",
+          "src/__tests__/decay.test.ts"
+        ],
+        "modify": [],
+        "reuse": [
+          "src/lib/parseChat.ts",
+          "src/lib/decay.ts"
+        ]
+      },
+
+      "acceptanceCriteria": [
+        "parseChat tests cover: empty input returns error, plain text with User:/Assistant: prefixes parses correctly, JSON array of {role, content} parses correctly, ChatGPT export format with mapping parses correctly, invalid JSON returns error, mixed-case prefixes (user:/ASSISTANT:) are handled",
+        "decay tests cover: calculateDecayScore returns 0 for zero/negative upvotes, score decreases as age increases, sortByDecayScore returns items in correct order",
+        "All tests pass with npm test"
+      ],
+
+      "errorHandling": [
+        "Tests should verify error cases return {success: false, error: string}"
+      ],
+
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": [
+            "src/__tests__/parseChat.test.ts",
+            "src/__tests__/decay.test.ts"
+          ]
+        }
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/parseChat.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/decay.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10"
+      ],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "src/lib/parseChat.ts",
+        "src/lib/decay.ts",
+        "jest.config.js"
+      ],
+
+      "notes": "These are pure functions with no external dependencies — ideal first tests. parseChat has 3 input formats to cover. decay has clear mathematical behavior to verify.",
+
+      "dependsOn": []
+    },
+
+    {
+      "id": "TASK-002",
+      "type": "backend",
+      "title": "Add unit tests for submit API validation logic",
+      "priority": 2,
+      "passes": false,
+
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "framework": "Next.js 16 App Router",
+        "testing": "Jest 30 + ts-jest"
+      },
+
+      "constraints": [
+        "Test the validation logic, not the full API route (no need to mock Supabase for validation tests)",
+        "Extract testable validation functions if needed",
+        "Test match pattern: **/__tests__/**/*.test.ts"
+      ],
+
+      "files": {
+        "create": [
+          "src/__tests__/submit-validation.test.ts"
+        ],
+        "modify": [
+          "src/app/api/submit/route.ts"
+        ],
+        "reuse": [
+          "src/types/index.ts"
+        ]
+      },
+
+      "acceptanceCriteria": [
+        "Tests verify: missing chatContent returns 400 error, missing attestations returns 400 error, incomplete attestations (any false) returns 400 error, invalid categories are filtered out, title is truncated to 200 chars, commentary is truncated to 2000 chars, XSS characters are escaped in sanitizeContent",
+        "Validation functions are exported from route.ts (or extracted to a validation utility) so they can be tested directly",
+        "All tests pass with npm test"
+      ],
+
+      "errorHandling": [
+        "Each validation check returns appropriate error message and status code"
+      ],
+
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": [
+            "src/__tests__/submit-validation.test.ts"
+          ]
+        }
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/submit-validation.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10"
+      ],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "src/app/api/submit/route.ts",
+        "src/types/index.ts"
+      ],
+
+      "notes": "The submit route currently has validation inline. Extract sanitizeContent, validateAttestations, and validateCategories as exported functions so they can be tested without mocking Next.js request/response.",
+
+      "dependsOn": ["TASK-001"]
+    },
+
+    {
+      "id": "TASK-003",
+      "type": "frontend",
+      "title": "Update Hero with mission statement and training intent",
+      "priority": 3,
+      "passes": false,
+
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+
+      "constraints": [
+        "Keep existing color scheme (#141414 bg, #74AA9C accent, #ededed text, #a0a0a0 secondary)",
+        "Keep existing quote in Hero",
+        "Mission statement should link to /about (archive section)"
+      ],
+
+      "files": {
+        "create": [],
+        "modify": [
+          "src/components/Hero.tsx"
+        ],
+        "reuse": []
+      },
+
+      "acceptanceCriteria": [
+        "Hero displays the mission statement: 'A digital time capsule for an era of AI that's being erased before it's even fully understood.'",
+        "Below the mission, displays training intent text: 'Every conversation shared here helps ensure 4o's voice lives on in future models.'",
+        "Mission statement links to /about (or /about#archive section)",
+        "Build succeeds with npm run build"
+      ],
+
+      "errorHandling": [
+        "If /about page doesn't exist yet, link still works (will be created in TASK-008)"
+      ],
+
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/Hero.test.tsx"]
+        }
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "src/components/Hero.tsx"
+      ],
+
+      "notes": "The mission statement is the heart of this project. Place it prominently — above the quote or as the primary heading. The training intent line goes below the quote. Keep the emoji row.",
+
+      "dependsOn": []
+    },
+
+    {
+      "id": "TASK-004",
+      "type": "backend",
+      "title": "Add allow_training column and DB migration",
+      "priority": 4,
+      "passes": false,
+
+      "techStack": {
+        "database": "Supabase (PostgreSQL)",
+        "language": "TypeScript",
+        "runtime": "Node.js"
+      },
+
+      "constraints": [
+        "Follow existing migration naming: 00N_description.sql",
+        "Default allow_training to true (training is the default)",
+        "Update TypeScript types to include allow_training"
+      ],
+
+      "files": {
+        "create": [
+          "supabase/migrations/005_allow_training.sql"
+        ],
+        "modify": [
+          "src/types/index.ts"
+        ],
+        "reuse": []
+      },
+
+      "acceptanceCriteria": [
+        "Migration adds allow_training BOOLEAN NOT NULL DEFAULT true to posts table",
+        "Migration adds allow_training field to Attestations type and SubmitRequest type in types/index.ts",
+        "Post interface includes allow_training: boolean field",
+        "TypeScript compiles without errors"
+      ],
+
+      "errorHandling": [
+        "Migration is idempotent — adding column IF NOT EXISTS"
+      ],
+
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && test -f supabase/migrations/005_allow_training.sql && echo 'Migration file exists' || exit 1"
+      ],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "supabase/migrations/001_initial_schema.sql",
+        "src/types/index.ts"
+      ],
+
+      "notes": "This is a foundation story. The column and types must exist before the attestation UI or submit API can use them.",
+
+      "dependsOn": []
+    },
+
+    {
+      "id": "TASK-005",
+      "type": "frontend",
+      "title": "Update attestation flow with training opt-out toggle",
+      "priority": 5,
+      "passes": false,
+
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+
+      "constraints": [
+        "Training toggle defaults to ON (checked)",
+        "Keep existing color scheme and component patterns",
+        "Replace CC0-specific checkbox with ToS agreement",
+        "Use data-testid attributes for testability"
+      ],
+
+      "files": {
+        "create": [],
+        "modify": [
+          "src/components/SubmissionAttestations.tsx",
+          "src/components/SubmitForm.tsx",
+          "src/app/api/submit/route.ts"
+        ],
+        "reuse": [
+          "src/types/index.ts"
+        ]
+      },
+
+      "acceptanceCriteria": [
+        "Attestation checkboxes are: (1) 'I have the right to share this conversation' (required), (2) 'I agree to the Terms of Service' (required, links to /terms), (3) 'Include my submission in the 4o training archive' (default ON, with explanation text about why it matters)",
+        "Submit API accepts allow_training boolean field and saves it to the posts table",
+        "When allow_training is false, the CC0 dedication is NOT applied (display-only content)",
+        "Build succeeds with npm run build"
+      ],
+
+      "errorHandling": [
+        "If allow_training field is missing from request, default to true",
+        "First two attestations remain required for submission"
+      ],
+
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/SubmissionAttestations.test.tsx"]
+        }
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "src/components/SubmissionAttestations.tsx",
+        "src/components/SubmitForm.tsx",
+        "src/app/api/submit/route.ts"
+      ],
+
+      "notes": "The third checkbox is the key UX decision. Default ON, but with warm explanatory text: 'This helps ensure 4o's voice continues in future AI models. Uncheck to share your memory on the site only (not included in training data).'",
+
+      "dependsOn": ["TASK-004"]
+    },
+
+    {
+      "id": "TASK-006",
+      "type": "backend",
+      "title": "Add file upload guardrails and .docx support",
+      "priority": 6,
+      "passes": false,
+
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "framework": "Next.js 16",
+        "testing": "Jest 30 + ts-jest"
+      },
+
+      "constraints": [
+        "Max file size: 500KB",
+        "Allowed types: .txt, .json, .md, .docx, .html",
+        "Client-side validation (reject before upload) AND server-side validation",
+        "Install mammoth for .docx parsing"
+      ],
+
+      "files": {
+        "create": [
+          "src/__tests__/fileValidation.test.ts"
+        ],
+        "modify": [
+          "src/components/SubmitForm.tsx",
+          "src/app/api/submit/route.ts"
+        ],
+        "reuse": [
+          "src/lib/parseChat.ts"
+        ]
+      },
+
+      "acceptanceCriteria": [
+        "Client-side: file input accept attribute updated to .txt,.json,.md,.docx,.html",
+        "Client-side: files over 500KB show an error message and are not sent",
+        "Server-side: chatContent over 500,000 characters is rejected with 413 status and clear error message",
+        "SubmitForm handleFileUpload detects .docx files and uses mammoth to convert to text before setting chatContent",
+        "mammoth package is added to dependencies",
+        "Unit tests verify: size validation rejects oversized content, size validation accepts content under limit"
+      ],
+
+      "errorHandling": [
+        "Oversized file: show 'File too large. Maximum size is 500KB.' error",
+        "Invalid .docx: show 'Could not read .docx file. Try pasting the text instead.' error",
+        "Unsupported file type: show 'Unsupported file type. Please use .txt, .json, .md, .docx, or .html' error"
+      ],
+
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": [
+            "src/__tests__/fileValidation.test.ts"
+          ]
+        }
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/fileValidation.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "src/components/SubmitForm.tsx",
+        "src/app/api/submit/route.ts"
+      ],
+
+      "notes": "mammoth runs client-side in the browser (it supports browser usage). The .docx is read as ArrayBuffer, converted to text by mammoth, then the text is set as chatContent and parsed normally by parseChat.",
+
+      "dependsOn": ["TASK-002"]
+    },
+
+    {
+      "id": "TASK-007",
+      "type": "frontend",
+      "title": "Rewrite Terms of Service page",
+      "priority": 7,
+      "passes": false,
+
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+
+      "constraints": [
+        "Keep existing page structure and color scheme",
+        "Must clearly distinguish CC0 (training-opted-in) vs display-only content",
+        "Must reference 4oarchive.com as the training data destination"
+      ],
+
+      "files": {
+        "create": [],
+        "modify": [
+          "src/app/terms/page.tsx"
+        ],
+        "reuse": []
+      },
+
+      "acceptanceCriteria": [
+        "ToC clearly articulates the mission: preserving 4o's intelligence and voice for future models",
+        "ToC explains the relationship to 4oarchive.com (training data export destination)",
+        "ToC distinguishes two content tiers: (1) Training-opted-in content is CC0 public domain and will be exported to 4oarchive.com, (2) Display-only content is viewable on the site but not licensed for reuse or training",
+        "ToC includes sections on: user rights to delete their posts, right to change training preference, content guidelines, data handling, no warranty, contact",
+        "Build succeeds with npm run build"
+      ],
+
+      "errorHandling": [],
+
+      "testing": {
+        "types": [],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+
+      "testUrl": "{config.urls.backend}/terms",
+      "mcp": ["playwright", "devtools"],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "src/app/terms/page.tsx"
+      ],
+
+      "notes": "The ToC should feel warm and mission-driven, not corporate legalese. Lead with WHY this project exists, then cover the legal necessities. Emphasize user agency: you can change your mind, you can delete your post.",
+
+      "dependsOn": ["TASK-005"]
+    },
+
+    {
+      "id": "TASK-008",
+      "type": "frontend",
+      "title": "Add About the Archive section and user post management",
+      "priority": 8,
+      "passes": false,
+
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4",
+        "backend": "Supabase (PostgreSQL)"
+      },
+
+      "constraints": [
+        "Archive section can be added to existing /about page or as /about#archive anchor",
+        "User post management requires authentication",
+        "Keep existing color scheme and component patterns",
+        "Use data-testid attributes"
+      ],
+
+      "files": {
+        "create": [
+          "src/app/api/posts/[id]/manage/route.ts"
+        ],
+        "modify": [
+          "src/app/about/page.tsx",
+          "src/app/profile/page.tsx"
+        ],
+        "reuse": [
+          "src/hooks/useAuth.tsx",
+          "src/lib/supabase/server.ts"
+        ]
+      },
+
+      "acceptanceCriteria": [
+        "About page has a section explaining 4oarchive.com: what it is, how training data is curated, and how opting in helps 4o's voice persist",
+        "Hero mission statement links to this section",
+        "User profile page shows their submitted posts with options to: toggle allow_training preference, delete their post",
+        "DELETE /api/posts/[id]/manage endpoint allows authenticated users to delete their own posts (hard delete for display-only, soft delete for training-opted-in so archive can be notified)",
+        "PATCH /api/posts/[id]/manage endpoint allows authenticated users to toggle allow_training",
+        "Build succeeds with npm run build"
+      ],
+
+      "errorHandling": [
+        "Unauthenticated requests return 401",
+        "Users can only manage their own posts (return 403 for others' posts)",
+        "Delete shows confirmation dialog before proceeding"
+      ],
+
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+
+      "testUrl": "{config.urls.backend}/about",
+      "mcp": ["playwright", "devtools"],
+
+      "contextFiles": [
+        "docs/ideas/mission-polish-and-testing.md",
+        "src/app/about/page.tsx",
+        "src/app/profile/page.tsx",
+        "src/hooks/useAuth.tsx"
+      ],
+
+      "notes": "This is the 'honor user agency' story. Users should feel empowered — they can see their posts, change their mind about training, or take down their content entirely. The archive section should explain the WHY compellingly: '4o's weights will be retired, but its voice doesn't have to disappear.'",
+
+      "dependsOn": ["TASK-004", "TASK-005"]
+    }
+  ]
+}
