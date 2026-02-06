@@ -169,3 +169,7 @@ Fri Feb  6 01:19:25 PST 2026: Completed TASK-006 - Added file upload guardrails 
   Files created: src/lib/fileValidation.ts, src/__tests__/fileValidation.test.ts
   Files modified: src/components/SubmitForm.tsx, src/app/api/submit/route.ts
 [2026-02-06 01:19:37] Session ended
+[2026-02-06T01:19:47-08:00] COMPLETED TASK-006 
+Fri Feb  6 01:21:24 PST 2026: Completed TASK-007 - Rewrote Terms of Service page. Leads with mission statement (warm, not legalese). Adds 'Two Ways to Share' section with side-by-side Training Archive (CC0) vs Display Only cards. References 4oarchive.com as training data destination. Includes sections on: user rights (change training preference, delete posts, stay anonymous), content ownership, content guidelines, data handling, nature of content, no warranty, contact. All checks pass: tsc clean, build succeeds.
+  Files modified: src/app/terms/page.tsx
+[2026-02-06 01:21:34] Session ended

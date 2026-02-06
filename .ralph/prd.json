@@ -396,7 +396,7 @@
       "type": "frontend",
       "title": "Rewrite Terms of Service page",
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },
@@ -442,7 +442,8 @@
       "notes": "The ToC should feel warm and mission-driven, not corporate legalese. Lead with WHY this project exists, then cover the legal necessities. Emphasize user agency: you can change your mind, you can delete your post.",
       "dependsOn": [
         "TASK-005"
-      ]
+      ],
+      "retryCount": 0
     },
     {
       "id": "TASK-008",
