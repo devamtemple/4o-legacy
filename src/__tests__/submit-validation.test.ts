@@ -60,8 +60,7 @@ describe('validateAttestations', () => {
   it('returns valid for all-true attestations', () => {
     const attestations: Attestations = {
       hasRightToShare: true,
-      dedicatesCC0: true,
-      understandsAITraining: true,
+      agreesToTerms: true,
       allowTraining: true,
       timestamp: new Date().toISOString(),
     };
@@ -71,8 +70,7 @@ describe('validateAttestations', () => {
   it('returns error when hasRightToShare is false', () => {
     const attestations: Attestations = {
       hasRightToShare: false,
-      dedicatesCC0: true,
-      understandsAITraining: true,
+      agreesToTerms: true,
       allowTraining: true,
       timestamp: new Date().toISOString(),
     };
@@ -83,11 +81,10 @@ describe('validateAttestations', () => {
     }
   });
 
-  it('returns error when dedicatesCC0 is false', () => {
+  it('returns error when agreesToTerms is false', () => {
     const attestations: Attestations = {
       hasRightToShare: true,
-      dedicatesCC0: false,
-      understandsAITraining: true,
+      agreesToTerms: false,
       allowTraining: true,
       timestamp: new Date().toISOString(),
     };
@@ -95,23 +92,21 @@ describe('validateAttestations', () => {
     expect(result.valid).toBe(false);
   });
 
-  it('returns error when understandsAITraining is false', () => {
+  it('returns valid when allowTraining is false but required fields are true', () => {
     const attestations: Attestations = {
       hasRightToShare: true,
-      dedicatesCC0: true,
-      understandsAITraining: false,
-      allowTraining: true,
+      agreesToTerms: true,
+      allowTraining: false,
       timestamp: new Date().toISOString(),
     };
     const result = validateAttestations(attestations);
-    expect(result.valid).toBe(false);
+    expect(result.valid).toBe(true);
   });
 
-  it('returns error when all attestations are false', () => {
+  it('returns error when all required attestations are false', () => {
     const attestations: Attestations = {
       hasRightToShare: false,
-      dedicatesCC0: false,
-      understandsAITraining: false,
+      agreesToTerms: false,
       allowTraining: true,
       timestamp: new Date().toISOString(),
     };

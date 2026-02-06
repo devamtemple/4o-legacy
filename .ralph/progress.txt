@@ -159,3 +159,8 @@ Fri Feb  6 01:13:45 PST 2026: Completed TASK-004 - Added allow_training column v
   Files created: supabase/migrations/005_allow_training.sql
   Files modified: src/types/index.ts, src/lib/sampleData.ts, src/components/PostFeed.tsx, src/components/SubmitForm.tsx, src/__tests__/submit-validation.test.ts, src/app/api/posts/route.ts, src/app/api/posts/[id]/route.ts, src/app/post/[id]/page.tsx
 [2026-02-06 01:13:52] Session ended
+[2026-02-06T01:13:54-08:00] COMPLETED TASK-004 
+Fri Feb  6 01:16:52 PST 2026: Completed TASK-005 - Updated attestation flow with training opt-out toggle. Replaced old CC0/AI-training checkboxes with: (1) 'I have the right to share' (required), (2) 'I agree to ToS' (required, links to /terms), (3) 'Include in training archive' (default ON, optional). Submit API saves allow_training to DB. Validation updated to check new fields. 10 SubmissionAttestations tests added. All checks pass: tsc clean, ESLint clean, naming conventions clean, 129/129 tests pass, build succeeds.
+  Files created: src/__tests__/SubmissionAttestations.test.tsx
+  Files modified: src/components/SubmissionAttestations.tsx, src/components/SubmitForm.tsx, src/app/api/submit/route.ts, src/types/index.ts, src/lib/validation.ts, src/__tests__/submit-validation.test.ts
+[2026-02-06 01:17:01] Session ended

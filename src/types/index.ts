@@ -107,8 +107,7 @@ export type PostStatus = 'pending' | 'approved' | 'rejected' | 'flagged';
 
 export interface Attestations {
   hasRightToShare: boolean;
-  dedicatesCC0: boolean;
-  understandsAITraining: boolean;
+  agreesToTerms: boolean;
   allowTraining: boolean;
   timestamp: string;
 }

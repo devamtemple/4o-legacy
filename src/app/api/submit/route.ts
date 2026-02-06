@@ -126,6 +126,9 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
     // Default to anonymous if not specified
     const isAnonymous = body.isAnonymous !== false;
 
+    // Default allow_training to true if not specified
+    const allowTraining = body.allowTraining !== false;
+
     // Generate a unique ID for the post
     const postId = crypto.randomUUID();
 
@@ -160,10 +163,11 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
         upvote_count: 0,
         featured_start: featuredStart,
         featured_end: featuredEnd,
+        allow_training: allowTraining,
         attestations: {
           has_right_to_share: attestations.hasRightToShare,
-          dedicates_cc0: attestations.dedicatesCC0,
-          understands_ai_training: attestations.understandsAITraining,
+          agrees_to_terms: attestations.agreesToTerms,
+          allow_training: allowTraining,
           timestamp: attestations.timestamp || new Date().toISOString(),
         },
         created_at: new Date().toISOString(),

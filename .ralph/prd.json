@@ -256,7 +256,7 @@
       "type": "frontend",
       "title": "Update attestation flow with training opt-out toggle",
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },
@@ -317,7 +317,8 @@
       "notes": "The third checkbox is the key UX decision. Default ON, but with warm explanatory text: 'This helps ensure 4o's voice continues in future AI models. Uncheck to share your memory on the site only (not included in training data).'",
       "dependsOn": [
         "TASK-004"
-      ]
+      ],
+      "retryCount": 0
     },
     {
       "id": "TASK-006",

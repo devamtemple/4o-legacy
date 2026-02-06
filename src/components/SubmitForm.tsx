@@ -10,8 +10,8 @@ type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 const initialAttestations: AttestationState = {
   hasRightToShare: false,
-  dedicatesCC0: false,
-  understandsAITraining: false,
+  agreesToTerms: false,
+  allowTraining: true,
 };
 
 export default function SubmitForm() {
@@ -31,8 +31,7 @@ export default function SubmitForm() {
 
   const allAttestationsChecked =
     attestations.hasRightToShare &&
-    attestations.dedicatesCC0 &&
-    attestations.understandsAITraining;
+    attestations.agreesToTerms;
 
   // Parse chat content to extract messages for the excerpt selector
   const parsedMessages = useMemo((): ChatMessage[] => {
@@ -74,9 +73,11 @@ export default function SubmitForm() {
         chatContent,
         categories: selectedCategories.length > 0 ? selectedCategories : undefined,
         isAnonymous: true,
+        allowTraining: attestations.allowTraining,
         attestations: {
-          ...attestations,
-          allowTraining: true,
+          hasRightToShare: attestations.hasRightToShare,
+          agreesToTerms: attestations.agreesToTerms,
+          allowTraining: attestations.allowTraining,
           timestamp: new Date().toISOString(),
         },
       };

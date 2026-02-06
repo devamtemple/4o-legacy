@@ -36,11 +36,7 @@ export function validateAttestations(
   if (!attestations) {
     return { valid: false, error: 'Attestations required' };
   }
-  if (
-    !attestations.hasRightToShare ||
-    !attestations.dedicatesCC0 ||
-    !attestations.understandsAITraining
-  ) {
+  if (!attestations.hasRightToShare || !attestations.agreesToTerms) {
     return { valid: false, error: 'All attestations must be confirmed' };
   }
   return { valid: true };

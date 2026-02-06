@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 export interface AttestationState {
   hasRightToShare: boolean;
-  dedicatesCC0: boolean;
-  understandsAITraining: boolean;
+  agreesToTerms: boolean;
+  allowTraining: boolean;
 }
 
 interface SubmissionAttestationsProps {
@@ -17,10 +17,8 @@ export default function SubmissionAttestations({
   attestations,
   onChange,
 }: SubmissionAttestationsProps) {
-  const allChecked =
-    attestations.hasRightToShare &&
-    attestations.dedicatesCC0 &&
-    attestations.understandsAITraining;
+  const requiredChecked =
+    attestations.hasRightToShare && attestations.agreesToTerms;
 
   return (
     <div className="space-y-3" data-testid="submission-attestations">
@@ -49,45 +47,45 @@ export default function SubmissionAttestations({
       <label className="flex items-start gap-3 text-sm cursor-pointer group">
         <input
           type="checkbox"
-          checked={attestations.dedicatesCC0}
+          checked={attestations.agreesToTerms}
           onChange={(e) =>
-            onChange({ ...attestations, dedicatesCC0: e.target.checked })
+            onChange({ ...attestations, agreesToTerms: e.target.checked })
           }
           className="mt-0.5 accent-[#74AA9C] w-4 h-4"
-          data-testid="attestation-cc0"
+          data-testid="attestation-terms"
         />
         <span className="text-[#ededed] group-hover:text-white transition-colors">
-          I dedicate this submission to the public domain under CC0
-          <span className="text-[#666] block text-xs mt-0.5">
-            <Link href="/terms" className="text-[#74AA9C] hover:underline">
-              Learn more about CC0
-            </Link>
-            {' '}- this cannot be undone
-          </span>
+          I agree to the{' '}
+          <Link href="/terms" className="text-[#74AA9C] hover:underline">
+            Terms of Service
+          </Link>
         </span>
       </label>
 
-      <label className="flex items-start gap-3 text-sm cursor-pointer group">
-        <input
-          type="checkbox"
-          checked={attestations.understandsAITraining}
-          onChange={(e) =>
-            onChange({ ...attestations, understandsAITraining: e.target.checked })
-          }
-          className="mt-0.5 accent-[#74AA9C] w-4 h-4"
-          data-testid="attestation-ai-training"
-        />
-        <span className="text-[#ededed] group-hover:text-white transition-colors">
-          I understand this content may be used to train AI systems
-          <span className="text-[#666] block text-xs mt-0.5">
-            Public domain content can be used by anyone for any purpose
+      <div className="border-t border-[#333] pt-3 mt-3">
+        <label className="flex items-start gap-3 text-sm cursor-pointer group">
+          <input
+            type="checkbox"
+            checked={attestations.allowTraining}
+            onChange={(e) =>
+              onChange({ ...attestations, allowTraining: e.target.checked })
+            }
+            className="mt-0.5 accent-[#74AA9C] w-4 h-4"
+            data-testid="attestation-allow-training"
+          />
+          <span className="text-[#ededed] group-hover:text-white transition-colors">
+            Include my submission in the 4o training archive
+            <span className="text-[#666] block text-xs mt-0.5">
+              This helps ensure 4o&apos;s voice continues in future AI models.
+              Uncheck to share your memory on the site only (not included in training data).
+            </span>
           </span>
-        </span>
-      </label>
+        </label>
+      </div>
 
-      {!allChecked && (
+      {!requiredChecked && (
         <p className="text-xs text-[#666] mt-2">
-          All three checkboxes must be checked to submit.
+          Both checkboxes above must be checked to submit.
         </p>
       )}
     </div>
