@@ -201,7 +201,7 @@
       "type": "backend",
       "title": "Add allow_training column and DB migration",
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "database": "Supabase (PostgreSQL)",
         "language": "TypeScript",
@@ -248,7 +248,8 @@
         "src/types/index.ts"
       ],
       "notes": "This is a foundation story. The column and types must exist before the attestation UI or submit API can use them.",
-      "dependsOn": []
+      "dependsOn": [],
+      "retryCount": 0
     },
     {
       "id": "TASK-005",

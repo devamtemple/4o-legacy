@@ -51,6 +51,7 @@ function transformApiPost(apiPost: ApiPost): Post {
     reactions: apiPost.reactions,
     authorName: apiPost.author || undefined,
     isAnonymous: apiPost.author === null,
+    allowTraining: true,
   };
 }
 

@@ -76,6 +76,7 @@ export default function SubmitForm() {
         isAnonymous: true,
         attestations: {
           ...attestations,
+          allowTraining: true,
           timestamp: new Date().toISOString(),
         },
       };

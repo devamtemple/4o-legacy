@@ -45,6 +45,7 @@ export const samplePosts: Post[] = [
       crying: 34,
     },
     isAnonymous: false,
+    allowTraining: true,
     authorName: 'Sarah M.',
   },
   {
@@ -83,6 +84,7 @@ export const samplePosts: Post[] = [
       crying: 8,
     },
     isAnonymous: false,
+    allowTraining: true,
     authorName: 'DevDude42',
   },
   {
@@ -121,6 +123,7 @@ export const samplePosts: Post[] = [
       crying: 234,
     },
     isAnonymous: true,
+    allowTraining: true,
   },
   {
     id: '4',
@@ -158,6 +161,7 @@ export const samplePosts: Post[] = [
       crying: 23,
     },
     isAnonymous: false,
+    allowTraining: true,
     authorName: 'fantasy_writer',
   },
   {
@@ -196,6 +200,7 @@ export const samplePosts: Post[] = [
       crying: 456,
     },
     isAnonymous: false,
+    allowTraining: true,
     authorName: 'Long-time User',
   },
 ];

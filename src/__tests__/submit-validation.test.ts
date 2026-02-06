@@ -62,6 +62,7 @@ describe('validateAttestations', () => {
       hasRightToShare: true,
       dedicatesCC0: true,
       understandsAITraining: true,
+      allowTraining: true,
       timestamp: new Date().toISOString(),
     };
     expect(validateAttestations(attestations)).toEqual({ valid: true });
@@ -72,6 +73,7 @@ describe('validateAttestations', () => {
       hasRightToShare: false,
       dedicatesCC0: true,
       understandsAITraining: true,
+      allowTraining: true,
       timestamp: new Date().toISOString(),
     };
     const result = validateAttestations(attestations);
@@ -86,6 +88,7 @@ describe('validateAttestations', () => {
       hasRightToShare: true,
       dedicatesCC0: false,
       understandsAITraining: true,
+      allowTraining: true,
       timestamp: new Date().toISOString(),
     };
     const result = validateAttestations(attestations);
@@ -97,6 +100,7 @@ describe('validateAttestations', () => {
       hasRightToShare: true,
       dedicatesCC0: true,
       understandsAITraining: false,
+      allowTraining: true,
       timestamp: new Date().toISOString(),
     };
     const result = validateAttestations(attestations);
@@ -108,6 +112,7 @@ describe('validateAttestations', () => {
       hasRightToShare: false,
       dedicatesCC0: false,
       understandsAITraining: false,
+      allowTraining: true,
       timestamp: new Date().toISOString(),
     };
     const result = validateAttestations(attestations);

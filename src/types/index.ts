@@ -19,6 +19,7 @@ export interface Post {
   authorId?: string;
   authorName?: string;
   isAnonymous: boolean;
+  allowTraining: boolean;
   commentCount?: number;
   flagCount?: number;
   status?: PostStatus;
@@ -108,6 +109,7 @@ export interface Attestations {
   hasRightToShare: boolean;
   dedicatesCC0: boolean;
   understandsAITraining: boolean;
+  allowTraining: boolean;
   timestamp: string;
 }
 
@@ -117,6 +119,7 @@ export interface SubmitRequest {
   chatContent: string;
   categories?: Category[];
   isAnonymous?: boolean;
+  allowTraining?: boolean;
   featuredStart?: number;
   featuredEnd?: number;
   attestations?: Attestations;

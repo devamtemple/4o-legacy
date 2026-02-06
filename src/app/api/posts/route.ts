@@ -107,6 +107,7 @@ function transformDbPost(row: DbRow): Post {
     reactions: DEFAULT_REACTIONS, // TODO: Aggregate from reactions table
     authorId: (row['author_id'] as string | null) || undefined,
     isAnonymous: row['is_anonymous'] as boolean,
+    allowTraining: (row['allow_training'] as boolean) ?? true,
   };
 }
 
