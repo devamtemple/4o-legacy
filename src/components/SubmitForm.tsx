@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Category, CATEGORY_LABELS, SubmitRequest, SubmitResponse, ApiError, ChatMessage } from '@/types';
 import { parseChat } from '@/lib/parseChat';
+import { validateFileSize, validateFileType } from '@/lib/fileValidation';
 import FeaturedExcerptSelector from './FeaturedExcerptSelector';
 import SubmissionAttestations, { AttestationState } from './SubmissionAttestations';
 
@@ -26,6 +27,7 @@ export default function SubmitForm() {
   const [submittedPostId, setSubmittedPostId] = useState<string | null>(null);
   const [featuredStart, setFeaturedStart] = useState<number>(0);
   const [featuredEnd, setFeaturedEnd] = useState<number>(3);
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const isSubmitting = submitState === 'submitting';
 
@@ -57,6 +59,36 @@ export default function SubmitForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setFileError(null);
+
+    // Validate file type
+    const typeResult = validateFileType(file.name);
+    if (!typeResult.valid) {
+      setFileError(typeResult.error!);
+      return;
+    }
+
+    // Validate file size
+    const sizeResult = validateFileSize(file.size);
+    if (!sizeResult.valid) {
+      setFileError(sizeResult.error!);
+      return;
+    }
+
+    // Handle .docx files with mammoth
+    if (file.name.toLowerCase().endsWith('.docx')) {
+      try {
+        const mammoth = await import('mammoth');
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        setChatContent(result.value);
+      } catch {
+        setFileError('Could not read .docx file. Try pasting the text instead.');
+      }
+      return;
+    }
+
+    // Handle text-based files
     const text = await file.text();
     setChatContent(text);
   };
@@ -205,17 +237,23 @@ export default function SubmitForm() {
           <div className="border-2 border-dashed border-[#333] rounded-md p-6 text-center hover:border-[#74AA9C] transition-colors">
             <input
               type="file"
-              accept=".txt,.json,.md"
+              accept=".txt,.json,.md,.docx,.html"
               onChange={handleFileUpload}
               className="hidden"
               id="file-upload"
             />
             <label htmlFor="file-upload" className="cursor-pointer">
               <p className="text-[#a0a0a0]">
-                {chatContent ? 'File loaded! Click to change.' : 'Click to upload .txt, .json, or .md'}
+                {chatContent ? 'File loaded! Click to change.' : 'Click to upload .txt, .json, .md, .docx, or .html'}
               </p>
             </label>
           </div>
+        )}
+
+        {fileError && (
+          <p className="text-red-400 text-sm mt-2" data-testid="file-error">
+            {fileError}
+          </p>
         )}
       </div>
 

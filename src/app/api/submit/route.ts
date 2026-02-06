@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseChat } from '@/lib/parseChat';
 import { sanitizeContent, validateAttestations, validateCategories } from '@/lib/validation';
+import { validateContentLength } from '@/lib/fileValidation';
 import { SubmitRequest, SubmitResponse, ApiError } from '@/types';
 
 // Rate limiting map (in production, use Redis or similar)
@@ -69,6 +70,15 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
       return NextResponse.json<ApiError>(
         { error: 'Chat content required' },
         { status: 400 }
+      );
+    }
+
+    // Validate content length
+    const contentLengthResult = validateContentLength(body.chatContent);
+    if (!contentLengthResult.valid) {
+      return NextResponse.json<ApiError>(
+        { error: contentLengthResult.error! },
+        { status: 413 }
       );
     }
 

@@ -325,7 +325,7 @@
       "type": "backend",
       "title": "Add file upload guardrails and .docx support",
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "runtime": "Node.js",
         "language": "TypeScript",
@@ -388,7 +388,8 @@
       "notes": "mammoth runs client-side in the browser (it supports browser usage). The .docx is read as ArrayBuffer, converted to text by mammoth, then the text is set as chatContent and parsed normally by parseChat.",
       "dependsOn": [
         "TASK-002"
-      ]
+      ],
+      "retryCount": 0
     },
     {
       "id": "TASK-007",

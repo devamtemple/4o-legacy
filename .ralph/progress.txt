@@ -164,3 +164,8 @@ Fri Feb  6 01:16:52 PST 2026: Completed TASK-005 - Updated attestation flow with
   Files created: src/__tests__/SubmissionAttestations.test.tsx
   Files modified: src/components/SubmissionAttestations.tsx, src/components/SubmitForm.tsx, src/app/api/submit/route.ts, src/types/index.ts, src/lib/validation.ts, src/__tests__/submit-validation.test.ts
 [2026-02-06 01:17:01] Session ended
+[2026-02-06T01:17:17-08:00] COMPLETED TASK-005 
+Fri Feb  6 01:19:25 PST 2026: Completed TASK-006 - Added file upload guardrails and .docx support. Installed mammoth for .docx parsing. Created fileValidation.ts with validateFileSize (500KB limit), validateFileType (.txt/.json/.md/.docx/.html), validateContentLength (500K chars). Updated SubmitForm.tsx: accept attribute includes .docx/.html, client-side size/type validation before upload, .docx files parsed via mammoth. Updated submit API: server-side 413 rejection for content >500K chars. 22 fileValidation tests added. All checks pass: tsc clean, ESLint clean, naming conventions clean, 151/151 tests pass, build succeeds.
+  Files created: src/lib/fileValidation.ts, src/__tests__/fileValidation.test.ts
+  Files modified: src/components/SubmitForm.tsx, src/app/api/submit/route.ts
+[2026-02-06 01:19:37] Session ended
