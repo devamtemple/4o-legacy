@@ -20,6 +20,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
   const [signupSuccess, setSignupSuccess] = useState(false);
 
   // Reset state when modal opens/closes
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional reset on open */
   useEffect(() => {
     if (isOpen) {
       setEmail('');
@@ -31,6 +32,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
       setMode(initialMode);
     }
   }, [isOpen, initialMode]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Handle escape key
   useEffect(() => {

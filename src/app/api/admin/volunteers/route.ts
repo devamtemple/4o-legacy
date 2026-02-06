@@ -2,18 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Volunteer, VolunteerStatus, ApiError } from '@/types';
 
-interface DbVolunteer {
-  id: string;
-  name: string;
-  email: string;
-  twitter: string | null;
-  reason: string;
-  status: string;
-  admin_notes: string | null;
-  reviewed_by: string | null;
-  reviewed_at: string | null;
-  created_at: string;
-}
+// Supabase returns snake_case columns; we use Record and bracket notation to transform
+type DbRow = Record<string, unknown>;
 
 interface VolunteersResponse {
   volunteers: Volunteer[];
@@ -23,18 +13,19 @@ interface VolunteersResponse {
   hasMore: boolean;
 }
 
-function transformDbVolunteer(db: DbVolunteer): Volunteer {
+function transformDbVolunteer(row: DbRow): Volunteer {
+  const reviewedAt = row['reviewed_at'] as string | null;
   return {
-    id: db.id,
-    name: db.name,
-    email: db.email,
-    twitter: db.twitter || undefined,
-    reason: db.reason,
-    status: db.status as VolunteerStatus,
-    adminNotes: db.admin_notes || undefined,
-    reviewedBy: db.reviewed_by || undefined,
-    reviewedAt: db.reviewed_at ? new Date(db.reviewed_at) : undefined,
-    createdAt: new Date(db.created_at),
+    id: row['id'] as string,
+    name: row['name'] as string,
+    email: row['email'] as string,
+    twitter: (row['twitter'] as string) || undefined,
+    reason: row['reason'] as string,
+    status: row['status'] as VolunteerStatus,
+    adminNotes: (row['admin_notes'] as string) || undefined,
+    reviewedBy: (row['reviewed_by'] as string) || undefined,
+    reviewedAt: reviewedAt ? new Date(reviewedAt) : undefined,
+    createdAt: new Date(row['created_at'] as string),
   };
 }
 
@@ -85,7 +76,7 @@ export async function GET(
       return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 
-    const volunteers = (data || []).map((v) => transformDbVolunteer(v as DbVolunteer));
+    const volunteers = (data || []).map((v) => transformDbVolunteer(v as DbRow));
     const total = count || 0;
 
     return NextResponse.json({
@@ -140,14 +131,16 @@ export async function POST(
     const newStatus = action === 'approve' ? 'approved' : 'rejected';
 
     // Update volunteer status
+    const updateData: Record<string, unknown> = {
+      status: newStatus,
+    };
+    updateData['admin_notes'] = notes || null;
+    updateData['reviewed_by'] = user.id;
+    updateData['reviewed_at'] = new Date().toISOString();
+
     const { error: updateError } = await supabase
       .from('volunteers')
-      .update({
-        status: newStatus,
-        admin_notes: notes || null,
-        reviewed_by: user.id,
-        reviewed_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('id', volunteerId);
 
     if (updateError) {

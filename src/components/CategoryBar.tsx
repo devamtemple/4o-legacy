@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Category, CATEGORY_LABELS } from '@/types';
 
 interface CategoryBarProps {

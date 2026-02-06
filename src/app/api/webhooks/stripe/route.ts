@@ -27,10 +27,10 @@ async function handleSuccessfulPayment(session: Stripe.Checkout.Session) {
       id: session.id,
       post_id: postId !== 'donation' ? postId : null,
       type: paymentType,
-      amount: session.amount_total,
+      amount: (session as unknown as Record<string, unknown>)['amount_total'] as number | null,
       currency: session.currency,
       status: 'completed',
-      customer_email: session.customer_email,
+      customer_email: (session as unknown as Record<string, unknown>)['customer_email'] as string | null,
       stripe_session_id: session.id,
       created_at: new Date().toISOString(),
     });
@@ -96,10 +96,10 @@ async function handleSuccessfulPayment(session: Stripe.Checkout.Session) {
         const { displayName, isPublic } = metadata;
         await supabase.from('donations').insert({
           stripe_payment_id: session.id,
-          amount: session.amount_total,
+          amount: (session as unknown as Record<string, unknown>)['amount_total'] as number | null,
           currency: session.currency || 'usd',
           display_name: displayName || null,
-          email: session.customer_email,
+          email: (session as unknown as Record<string, unknown>)['customer_email'] as string | null,
           is_public: isPublic === 'true',
           status: 'completed',
           completed_at: new Date().toISOString(),
@@ -122,10 +122,10 @@ async function handleFailedPayment(session: Stripe.Checkout.Session) {
       id: session.id,
       post_id: session.metadata?.postId !== 'donation' ? session.metadata?.postId : null,
       type: session.metadata?.type,
-      amount: session.amount_total,
+      amount: (session as unknown as Record<string, unknown>)['amount_total'] as number | null,
       currency: session.currency,
       status: 'failed',
-      customer_email: session.customer_email,
+      customer_email: (session as unknown as Record<string, unknown>)['customer_email'] as string | null,
       stripe_session_id: session.id,
       created_at: new Date().toISOString(),
     });
@@ -163,7 +163,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        if (session.payment_status === 'paid') {
+        if ((session as unknown as Record<string, unknown>)['payment_status'] === 'paid') {
           await handleSuccessfulPayment(session);
         }
         break;
@@ -177,7 +177,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
       case 'payment_intent.payment_failed': {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        console.error('Payment failed:', paymentIntent.last_payment_error?.message);
+        console.error('Payment failed:', ((paymentIntent as unknown as Record<string, unknown>)['last_payment_error'] as Record<string, unknown> | null)?.message);
         break;
       }
 

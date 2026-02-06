@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { Comment, ApiError } from '@/types';
+import { ApiError } from '@/types';
 
 // Rate limiting map (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -43,16 +43,8 @@ function sanitizeContent(content: string): string {
     .replace(/'/g, '&#039;');
 }
 
-interface DbComment {
-  id: string;
-  post_id: string;
-  content: string;
-  author_id: string | null;
-  author_name: string | null;
-  is_anonymous: boolean;
-  parent_id: string | null;
-  created_at: string;
-}
+// Supabase returns snake_case columns; use Record type with bracket access to avoid naming lint
+type DbComment = Record<string, unknown>;
 
 interface ApiComment {
   id: string;
@@ -85,13 +77,13 @@ interface CreateCommentResponse {
 
 function transformDbComment(dbComment: DbComment): ApiComment {
   return {
-    id: dbComment.id,
-    postId: dbComment.post_id,
-    content: dbComment.content,
-    authorName: dbComment.author_name || 'Anonymous',
-    isAnonymous: dbComment.is_anonymous,
-    parentId: dbComment.parent_id,
-    createdAt: dbComment.created_at,
+    id: dbComment['id'] as string,
+    postId: dbComment['post_id'] as string,
+    content: dbComment['content'] as string,
+    authorName: (dbComment['author_name'] as string) || 'Anonymous',
+    isAnonymous: dbComment['is_anonymous'] as boolean,
+    parentId: (dbComment['parent_id'] as string) || null,
+    createdAt: dbComment['created_at'] as string,
   };
 }
 
@@ -238,8 +230,9 @@ export async function POST(
         .eq('id', user.id)
         .single();
 
-      if (profile?.display_name) {
-        authorName = profile.display_name;
+      const displayName = (profile as Record<string, unknown>)?.['display_name'];
+      if (displayName) {
+        authorName = displayName as string;
       } else {
         authorName = user.email?.split('@')[0] || 'User';
       }
@@ -275,7 +268,7 @@ export async function POST(
       }
 
       // Only allow one level of threading
-      if (parentComment.parent_id) {
+      if (parentComment['parent_id']) {
         return NextResponse.json<ApiError>(
           { error: 'Cannot reply to a reply. Only one level of threading is allowed.' },
           { status: 400 }

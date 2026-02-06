@@ -124,6 +124,7 @@ export default function Home() {
               Supporters
             </Link>
             {' • '}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- API endpoint, not a page */}
             <a href="/api/posts" className="text-[#74AA9C] hover:underline">
               API
             </a>

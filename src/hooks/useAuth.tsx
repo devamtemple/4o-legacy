@@ -34,7 +34,7 @@ function transformUser(supabaseUser: SupabaseUser | null): AuthUser | null {
   return {
     id: supabaseUser.id,
     email: supabaseUser.email ?? '',
-    displayName: supabaseUser.user_metadata?.display_name ?? undefined,
+    displayName: (supabaseUser as unknown as Record<string, Record<string, unknown>>)['user_metadata']?.['display_name'] as string ?? undefined,
   };
 }
 

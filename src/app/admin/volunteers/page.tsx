@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Volunteer, VolunteerStatus } from '@/types';
+import { Volunteer } from '@/types';
 
 interface VolunteersResponse {
   volunteers: Volunteer[];

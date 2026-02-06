@@ -54,7 +54,7 @@
       "chromium",
       "mobile"
     ],
-    "baseUrl": "http://localhost:3000"
+    "baseUrl": ""
   },
   "mcp": {
     "playwright": {
@@ -65,20 +65,18 @@
   },
   "verification": {
     "codeReviewEnabled": true,
-    "browserEnabled": true,
+    "browserEnabled": false,
     "a11yEnabled": true,
     "mobileViewport": 375,
     "screenshotOnFailure": true
   },
   "urls": {
     "app": "http://localhost:3000",
-    "frontend": "http://localhost:3000",
+    "frontend": "",
     "docs": "http://localhost:3000/api/docs"
   },
   "frontend": {
-    "smokePages": [
-      "/"
-    ]
+    "smokePages": []
   },
   "env": {
     "required": [

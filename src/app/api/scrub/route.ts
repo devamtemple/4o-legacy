@@ -68,10 +68,10 @@ export async function POST(
     chat = post.chat as ChatMessage[];
 
     // If already scrubbed, return cached version
-    if (post.scrubbed_chat) {
+    if ((post as Record<string, unknown>)['scrubbed_chat']) {
       return NextResponse.json({
         success: true,
-        scrubbedContent: post.scrubbed_chat as ChatMessage[],
+        scrubbedContent: (post as Record<string, unknown>)['scrubbed_chat'] as ChatMessage[],
         replacementCount: 0, // Already processed
       });
     }

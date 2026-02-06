@@ -1,4 +1,5 @@
-import { createClient } from '../client';
+/* eslint-disable @typescript-eslint/no-require-imports */
+// require() is necessary here for jest.resetModules() to pick up env var changes
 
 // Mock the @supabase/ssr module
 jest.mock('@supabase/ssr', () => ({

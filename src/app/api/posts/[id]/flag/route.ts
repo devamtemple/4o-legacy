@@ -164,9 +164,9 @@ export async function POST(
         };
 
         if (userId) {
-          insertData.user_id = userId;
+          (insertData as Record<string, unknown>)['user_id'] = userId;
         } else {
-          insertData.ip_address = ip;
+          (insertData as Record<string, unknown>)['ip_address'] = ip;
         }
 
         if (body.details) {

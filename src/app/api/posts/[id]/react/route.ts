@@ -108,7 +108,7 @@ export async function POST(
     }
 
     // Try to interact with database
-    let reactions = { ...DEFAULT_REACTIONS };
+    const reactions = { ...DEFAULT_REACTIONS };
     let userReaction: ReactionType | null = null;
 
     try {
@@ -163,7 +163,7 @@ export async function POST(
       if (reactionCounts) {
         // Count reactions by type
         for (const r of reactionCounts) {
-          const type = r.reaction_type as ReactionType;
+          const type = (r as Record<string, unknown>)['reaction_type'] as ReactionType;
           if (VALID_REACTION_TYPES.includes(type)) {
             reactions[type]++;
           }
@@ -179,7 +179,7 @@ export async function POST(
         .single();
 
       if (currentUserReaction) {
-        userReaction = currentUserReaction.reaction_type as ReactionType;
+        userReaction = (currentUserReaction as Record<string, unknown>)['reaction_type'] as ReactionType;
       }
     } catch (dbError) {
       // Database not configured - return simulated success for development
@@ -232,7 +232,7 @@ export async function GET(
       userId = getAnonymousId(request);
     }
 
-    let reactions = { ...DEFAULT_REACTIONS };
+    const reactions = { ...DEFAULT_REACTIONS };
     let userReaction: ReactionType | null = null;
 
     try {
@@ -246,7 +246,7 @@ export async function GET(
 
       if (reactionCounts) {
         for (const r of reactionCounts) {
-          const type = r.reaction_type as ReactionType;
+          const type = (r as Record<string, unknown>)['reaction_type'] as ReactionType;
           if (VALID_REACTION_TYPES.includes(type)) {
             reactions[type]++;
           }
@@ -262,7 +262,7 @@ export async function GET(
         .single();
 
       if (currentUserReaction) {
-        userReaction = currentUserReaction.reaction_type as ReactionType;
+        userReaction = (currentUserReaction as Record<string, unknown>)['reaction_type'] as ReactionType;
       }
     } catch {
       // Database not configured - return defaults

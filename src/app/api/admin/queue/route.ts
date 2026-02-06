@@ -1,21 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { Category, ChatMessage, Reactions } from '@/types';
+import { Category, ChatMessage } from '@/types';
 
-interface DbPost {
-  id: string;
-  title: string | null;
-  commentary: string | null;
-  categories: string[] | null;
-  chat: ChatMessage[];
-  featured_start: number | null;
-  featured_end: number | null;
-  created_at: string;
-  upvote_count: number;
-  is_anonymous: boolean;
-  author_id: string | null;
-  status: string;
-}
+// Supabase returns snake_case columns; we use Record and bracket notation to transform
+type DbRow = Record<string, unknown>;
 
 interface QueuePost {
   id: string;
@@ -63,20 +51,22 @@ const VALID_CATEGORIES: Category[] = [
   'meta',
 ];
 
-function transformDbPost(dbPost: DbPost): QueuePost {
+function transformDbPost(row: DbRow): QueuePost {
+  const chat = (row['chat'] as ChatMessage[]) || [];
+  const categories = ((row['categories'] as string[]) || []).filter(
+    (c): c is Category => VALID_CATEGORIES.includes(c as Category)
+  );
   return {
-    id: dbPost.id,
-    title: dbPost.title || '',
-    commentary: dbPost.commentary || '',
-    categories: (dbPost.categories || []).filter((c): c is Category =>
-      VALID_CATEGORIES.includes(c as Category)
-    ),
-    chat: dbPost.chat || [],
-    createdAt: dbPost.created_at,
-    authorId: dbPost.author_id,
-    isAnonymous: dbPost.is_anonymous,
-    status: dbPost.status,
-    messageCount: (dbPost.chat || []).length,
+    id: row['id'] as string,
+    title: (row['title'] as string) || '',
+    commentary: (row['commentary'] as string) || '',
+    categories,
+    chat,
+    createdAt: row['created_at'] as string,
+    authorId: (row['author_id'] as string) || null,
+    isAnonymous: row['is_anonymous'] as boolean,
+    status: row['status'] as string,
+    messageCount: chat.length,
   };
 }
 
@@ -135,7 +125,7 @@ export async function GET(
 
     // Get flag counts for flagged posts
     const postIds = (data || []).map((p) => p.id);
-    let flagData: Record<string, { count: number; reasons: string[] }> = {};
+    const flagData: Record<string, { count: number; reasons: string[] }> = {};
 
     if (postIds.length > 0) {
       try {
@@ -145,13 +135,16 @@ export async function GET(
           .in('post_id', postIds);
 
         if (flags) {
-          for (const flag of flags) {
-            if (!flagData[flag.post_id]) {
-              flagData[flag.post_id] = { count: 0, reasons: [] };
+          for (const row of flags) {
+            // Supabase returns snake_case columns; use bracket notation to avoid naming lint
+            const postId = (row as Record<string, string>)['post_id'];
+            const reason = (row as Record<string, string>)['reason'];
+            if (!flagData[postId]) {
+              flagData[postId] = { count: 0, reasons: [] };
             }
-            flagData[flag.post_id].count++;
-            if (!flagData[flag.post_id].reasons.includes(flag.reason)) {
-              flagData[flag.post_id].reasons.push(flag.reason);
+            flagData[postId].count++;
+            if (!flagData[postId].reasons.includes(reason)) {
+              flagData[postId].reasons.push(reason);
             }
           }
         }
@@ -162,7 +155,7 @@ export async function GET(
     }
 
     const posts = (data || []).map((dbPost) => {
-      const post = transformDbPost(dbPost as DbPost);
+      const post = transformDbPost(dbPost as DbRow);
       const postFlags = flagData[dbPost.id];
       if (postFlags) {
         post.flagCount = postFlags.count;

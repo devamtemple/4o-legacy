@@ -101,9 +101,12 @@ export async function POST(
     }
 
     // Increment upvote count on post
+    const postRecord = post as Record<string, unknown>;
+    const updatePayload: Record<string, unknown> = {};
+    updatePayload['upvote_count'] = (Number(postRecord['upvote_count']) || 0) + 1;
     const { data: updatedPost, error: updateError } = await supabase
       .from('posts')
-      .update({ upvote_count: (post.upvote_count || 0) + 1 })
+      .update(updatePayload)
       .eq('id', postId)
       .select('upvote_count')
       .single();
@@ -123,9 +126,10 @@ export async function POST(
       );
     }
 
+    const updatedRecord = updatedPost as Record<string, unknown>;
     return NextResponse.json<VoteResponse>({
       success: true,
-      upvotes: updatedPost.upvote_count,
+      upvotes: Number(updatedRecord['upvote_count']),
     });
   } catch (error) {
     console.error('Vote error:', error);
@@ -216,10 +220,13 @@ export async function DELETE(
     }
 
     // Decrement upvote count on post
-    const newCount = Math.max(0, (post.upvote_count || 1) - 1);
+    const deletePostRecord = post as Record<string, unknown>;
+    const newCount = Math.max(0, (Number(deletePostRecord['upvote_count']) || 1) - 1);
+    const deleteUpdatePayload: Record<string, unknown> = {};
+    deleteUpdatePayload['upvote_count'] = newCount;
     const { data: updatedPost, error: updateError } = await supabase
       .from('posts')
-      .update({ upvote_count: newCount })
+      .update(deleteUpdatePayload)
       .eq('id', postId)
       .select('upvote_count')
       .single();
@@ -238,9 +245,10 @@ export async function DELETE(
       );
     }
 
+    const deleteUpdatedRecord = updatedPost as Record<string, unknown>;
     return NextResponse.json<VoteResponse>({
       success: true,
-      upvotes: updatedPost.upvote_count,
+      upvotes: Number(deleteUpdatedRecord['upvote_count']),
     });
   } catch (error) {
     console.error('Delete vote error:', error);

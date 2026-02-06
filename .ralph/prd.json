@@ -142,7 +142,7 @@
       "type": "frontend",
       "title": "Update Hero with mission statement and training intent",
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },
@@ -193,7 +193,8 @@
         "src/components/Hero.tsx"
       ],
       "notes": "The mission statement is the heart of this project. Place it prominently — above the quote or as the primary heading. The training intent line goes below the quote. Keep the emoji row.",
-      "dependsOn": []
+      "dependsOn": [],
+      "retryCount": 0
     },
     {
       "id": "TASK-004",

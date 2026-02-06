@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { VolunteerResponse, ApiError } from '@/types';
+import { ApiError } from '@/types';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 

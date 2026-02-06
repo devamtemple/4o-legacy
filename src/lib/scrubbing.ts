@@ -198,8 +198,6 @@ export async function scrubContent(
 // Quick regex-based scrubbing fallback (no AI)
 export function quickScrub(messages: ChatMessage[]): ScrubbingResult {
   const replacements: Replacement[] = [];
-  const nameMap = new Map<string, string>();
-  let nameCounter = 1;
 
   const scrubbedMessages = messages.map((message) => {
     let content = message.content;

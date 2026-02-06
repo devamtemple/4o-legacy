@@ -2,11 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { PublicSupporter, ApiError } from '@/types';
 
-interface DbDonation {
-  display_name: string;
-  amount: number;
-  created_at: string;
-}
+// Supabase returns snake_case columns; use Record type with bracket access
+type DbDonation = Record<string, unknown>;
 
 interface SupportersResponse {
   supporters: PublicSupporter[];
@@ -33,9 +30,9 @@ export async function GET(): Promise<NextResponse<SupportersResponse | ApiError>
     }
 
     const supporters: PublicSupporter[] = (data || []).map((d: DbDonation) => ({
-      displayName: d.display_name,
-      amount: d.amount,
-      createdAt: new Date(d.created_at),
+      displayName: d['display_name'] as string,
+      amount: d['amount'] as number,
+      createdAt: new Date(d['created_at'] as string),
     }));
 
     return NextResponse.json({

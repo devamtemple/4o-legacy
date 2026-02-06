@@ -38,19 +38,7 @@ const DEFAULT_REACTIONS: Reactions = {
   crying: 0,
 };
 
-interface DbPost {
-  id: string;
-  title: string | null;
-  commentary: string | null;
-  categories: string[] | null;
-  chat: ChatMessage[];
-  featured_start: number | null;
-  featured_end: number | null;
-  created_at: string;
-  upvote_count: number;
-  is_anonymous: boolean;
-  author_id: string | null;
-}
+type DbRow = Record<string, unknown>;
 
 interface ApiPost {
   id: string;
@@ -98,24 +86,27 @@ interface ErrorResponse {
   };
 }
 
-function transformDbPost(dbPost: DbPost): Post {
+function transformDbPost(row: DbRow): Post {
+  const categories = (row['categories'] as string[] | null) || [];
+  const featuredStart = row['featured_start'] as number | null;
+  const featuredEnd = row['featured_end'] as number | null;
   return {
-    id: dbPost.id,
-    title: dbPost.title || '',
-    commentary: dbPost.commentary || '',
-    categories: (dbPost.categories || []).filter((c): c is Category =>
+    id: row['id'] as string,
+    title: (row['title'] as string | null) || '',
+    commentary: (row['commentary'] as string | null) || '',
+    categories: categories.filter((c): c is Category =>
       VALID_CATEGORIES.includes(c as Category)
     ),
-    chat: dbPost.chat || [],
+    chat: (row['chat'] as ChatMessage[]) || [],
     featuredExcerpt:
-      dbPost.featured_start !== null && dbPost.featured_end !== null
-        ? { startIndex: dbPost.featured_start, endIndex: dbPost.featured_end }
+      featuredStart !== null && featuredEnd !== null
+        ? { startIndex: featuredStart, endIndex: featuredEnd }
         : undefined,
-    createdAt: new Date(dbPost.created_at),
-    upvotes: dbPost.upvote_count || 0,
+    createdAt: new Date(row['created_at'] as string),
+    upvotes: (row['upvote_count'] as number) || 0,
     reactions: DEFAULT_REACTIONS, // TODO: Aggregate from reactions table
-    authorId: dbPost.author_id || undefined,
-    isAnonymous: dbPost.is_anonymous,
+    authorId: (row['author_id'] as string | null) || undefined,
+    isAnonymous: row['is_anonymous'] as boolean,
   };
 }
 
@@ -186,13 +177,13 @@ async function fetchPostsFromDatabase(
     // Generate next cursor
     let nextCursor: string | null = null;
     if (hasMore && postsToReturn.length > 0) {
-      const lastPost = postsToReturn[postsToReturn.length - 1];
-      const cursorData = { createdAt: lastPost.created_at };
+      const lastPost = postsToReturn[postsToReturn.length - 1] as DbRow;
+      const cursorData = { createdAt: lastPost['created_at'] as string };
       nextCursor = Buffer.from(JSON.stringify(cursorData)).toString('base64');
     }
 
     // Transform database posts to our Post type
-    const posts = postsToReturn.map((dbPost: DbPost) => transformDbPost(dbPost));
+    const posts = postsToReturn.map((row: DbRow) => transformDbPost(row));
 
     return { posts, total: count || posts.length, hasMore, nextCursor };
   } catch (error) {
