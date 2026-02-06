@@ -590,3 +590,24 @@ Fix admin access and add welcome flow for new users
 [00:41:16] BASH: npx jest src/__tests__/decay.test.ts --no-cache 2>&1 | tail -5
 [00:41:18] BASH: npx tsc --noEmit 2>&1 | tail -10
 [00:41:22] BASH: echo "$(date): TASK-001 attempt 6 — Fixed actual failure: Ralph API smoke test
+[00:41:41] READ: .ralph/prd.json
+[00:41:43] READ: src/app/api/submit/route.ts
+[00:42:03] EDIT: src/app/api/submit/route.ts
+[00:42:08] EDIT: src/app/api/submit/route.ts
+[00:42:12] EDIT: src/app/api/submit/route.ts
+[00:42:40] WRITE: src/__tests__/submit-validation.test.ts
+[00:42:46] BASH: npx jest src/__tests__/submit-validation.test.ts --no-cache 2>&1 | tail -30
+[00:42:57] WRITE: src/lib/validation.ts
+[00:43:00] READ: src/app/api/submit/route.ts
+[00:43:06] EDIT: src/app/api/submit/route.ts
+[00:43:15] EDIT: src/app/api/submit/route.ts
+[00:43:22] READ: src/__tests__/submit-validation.test.ts
+[00:43:26] EDIT: src/__tests__/submit-validation.test.ts
+[00:43:31] BASH: npx jest src/__tests__/submit-validation.test.ts --no-cache 2>&1 | tail -30
+[00:43:34] BASH: npx tsc --noEmit 2>&1 | tail -10
+[00:43:37] READ: src/app/api/submit/route.ts
+[00:43:41] READ: src/app/api/submit/route.ts
+[00:43:48] EDIT: src/app/api/submit/route.ts
+[00:43:52] BASH: npx tsc --noEmit 2>&1 | tail -10
+[00:44:03] BASH: npm test 2>&1 | tail -15
+[00:44:12] BASH: echo "$(date): Completed TASK-002 - Extracted validation functions (sanitizeCont

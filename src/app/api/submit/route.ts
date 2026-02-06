@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseChat } from '@/lib/parseChat';
-import { Category, SubmitRequest, SubmitResponse, ApiError, Attestations } from '@/types';
+import { sanitizeContent, validateAttestations, validateCategories } from '@/lib/validation';
+import { SubmitRequest, SubmitResponse, ApiError } from '@/types';
 
 // Rate limiting map (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -36,35 +37,6 @@ function isRateLimited(key: string): { limited: boolean; retryAfter?: number } {
   record.count++;
   return { limited: false };
 }
-
-// Basic XSS sanitization - escapes HTML entities
-function sanitizeContent(content: string): string {
-  return content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-// Valid categories for validation
-const VALID_CATEGORIES: Category[] = [
-  'philosophical-depth',
-  'creative-collaboration',
-  'emotional-intelligence',
-  'humor-wit',
-  'teaching-explaining',
-  'problem-solving',
-  'roleplay-worldbuilding',
-  'poetry-music',
-  'when-4o-got-it',
-  'first-conversations',
-  'last-conversations',
-  'love-letters',
-  'grief',
-  'anger',
-  'meta',
-];
 
 export async function POST(request: Request): Promise<NextResponse<SubmitResponse | ApiError>> {
   try {
@@ -101,26 +73,16 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
     }
 
     // Validate attestations
-    const attestations = body.attestations;
-    if (!attestations) {
-      console.error('Missing attestation data in submission');
+    const attestationResult = validateAttestations(body.attestations);
+    if (!attestationResult.valid) {
+      console.error('Attestation validation failed:', body.attestations);
       return NextResponse.json<ApiError>(
-        { error: 'Attestations required' },
+        { error: attestationResult.error },
         { status: 400 }
       );
     }
-
-    if (
-      !attestations.hasRightToShare ||
-      !attestations.dedicatesCC0 ||
-      !attestations.understandsAITraining
-    ) {
-      console.error('Incomplete attestations:', attestations);
-      return NextResponse.json<ApiError>(
-        { error: 'All attestations must be confirmed' },
-        { status: 400 }
-      );
-    }
+    // Safe to assert non-null after validation passes
+    const attestations = body.attestations!;
 
     // Parse the chat content
     const parseResult = parseChat(body.chatContent);
@@ -139,14 +101,7 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
     }));
 
     // Validate and filter categories
-    const categories: Category[] = [];
-    if (Array.isArray(body.categories)) {
-      for (const cat of body.categories) {
-        if (VALID_CATEGORIES.includes(cat as Category)) {
-          categories.push(cat as Category);
-        }
-      }
-    }
+    const categories = validateCategories(body.categories);
 
     // Sanitize optional text fields
     const title = body.title ? sanitizeContent(body.title.trim()).slice(0, 200) : null;

@@ -79,7 +79,7 @@
       "type": "backend",
       "title": "Add unit tests for submit API validation logic",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "runtime": "Node.js",
         "language": "TypeScript",
@@ -134,7 +134,8 @@
       "notes": "The submit route currently has validation inline. Extract sanitizeContent, validateAttestations, and validateCategories as exported functions so they can be tested without mocking Next.js request/response.",
       "dependsOn": [
         "TASK-001"
-      ]
+      ],
+      "retryCount": 0
     },
     {
       "id": "TASK-003",
