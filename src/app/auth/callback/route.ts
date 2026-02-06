@@ -20,12 +20,14 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       const loginUrl = new URL('/auth/login', requestUrl.origin);
-      loginUrl.searchParams.set('error', 'OAuth authentication failed');
+      loginUrl.searchParams.set('error', 'Authentication failed');
       return NextResponse.redirect(loginUrl);
     }
 
-    // Redirect to home page on success
-    return NextResponse.redirect(new URL('/', requestUrl.origin));
+    // Redirect to home page with welcome flag for new users
+    const homeUrl = new URL('/', requestUrl.origin);
+    homeUrl.searchParams.set('welcome', 'true');
+    return NextResponse.redirect(homeUrl);
   }
 
   // No code provided, redirect to login

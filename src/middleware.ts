@@ -64,11 +64,11 @@ export async function middleware(request: NextRequest) {
   // Check if user is admin by looking at profiles table
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('is_admin')
+    .select('role')
     .eq('id', user.id)
     .single();
 
-  if (profileError || !profile?.is_admin) {
+  if (profileError || profile?.role !== 'admin') {
     return createForbiddenResponse(request, 'Forbidden - Admin access required');
   }
 

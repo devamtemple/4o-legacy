@@ -1,18 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Hero from '@/components/Hero';
 import SubmitForm from '@/components/SubmitForm';
 import CategoryBar from '@/components/CategoryBar';
 import PostFeed from '@/components/PostFeed';
 import AuthModal from '@/components/AuthModal';
+import WelcomeModal from '@/components/WelcomeModal';
 import { useAuth } from '@/hooks/useAuth';
 import { Category } from '@/types';
+
+// Separate component to handle welcome param (requires Suspense)
+function WelcomeHandler({ onShowWelcome }: { onShowWelcome: () => void }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (searchParams.get('welcome') === 'true' && user) {
+      onShowWelcome();
+      router.replace('/', { scroll: false });
+    }
+  }, [searchParams, user, router, onShowWelcome]);
+
+  return null;
+}
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
 
   const handleSignOut = async () => {
@@ -125,6 +144,17 @@ export default function Home() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+
+      {/* Welcome Modal for new users */}
+      <WelcomeModal
+        isOpen={isWelcomeModalOpen}
+        onClose={() => setIsWelcomeModalOpen(false)}
+      />
+
+      {/* Welcome param handler (wrapped in Suspense for SSR) */}
+      <Suspense fallback={null}>
+        <WelcomeHandler onShowWelcome={() => setIsWelcomeModalOpen(true)} />
+      </Suspense>
     </div>
   );
 }
