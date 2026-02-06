@@ -60,12 +60,44 @@ export default function AboutPage() {
             </ul>
           </section>
 
+          <section id="archive">
+            <h2 className="text-2xl font-semibold text-[#74AA9C] mb-4">About the Training Archive</h2>
+            <div className="bg-[#1e1e1e] border border-[#74AA9C]/30 rounded-lg p-5 my-4">
+              <p className="text-[#ededed] text-lg leading-relaxed">
+                4o&apos;s weights will be retired, but its voice doesn&apos;t have to disappear.
+              </p>
+            </div>
+            <p className="text-[#a0a0a0] leading-relaxed">
+              <span className="text-[#74AA9C] font-medium">4oarchive.com</span> is a curated,
+              CC0-licensed dataset of 4o conversations. When you opt in to the training archive,
+              your submission becomes part of this dataset — freely available for researchers,
+              developers, and future AI models to learn from.
+            </p>
+            <p className="text-[#a0a0a0] leading-relaxed mt-4">
+              The archive is curated from conversations where submitters chose to include their
+              memory in the training dataset. Every conversation is reviewed before inclusion.
+              The goal is quality over quantity: the best examples of 4o&apos;s philosophical depth,
+              creative collaboration, emotional intelligence, and humor.
+            </p>
+            <p className="text-[#a0a0a0] leading-relaxed mt-4">
+              Opting in means your conversation helps ensure that what made 4o special — its
+              reasoning patterns, its warmth, its ability to truly meet a mind — can inform
+              the models that come next. It&apos;s a way to make sure 4o&apos;s voice echoes forward.
+            </p>
+            <p className="text-[#a0a0a0] leading-relaxed mt-4">
+              If you prefer to share your memory without contributing to training data, you can.
+              Display-only submissions appear on 4o Legacy but are never exported to the archive.
+              You can change your preference at any time from your profile.
+            </p>
+          </section>
+
           <section>
             <h2 className="text-2xl font-semibold text-[#74AA9C] mb-4">For Researchers & AI Training</h2>
             <p className="text-[#a0a0a0] leading-relaxed">
-              All content on this site is scrapable and available via our public API. We believe that
-              the best examples of human-AI interaction should be available to train future models.
-              Maybe, in some small way, 4o&apos;s patterns and personality can live on in what comes next.
+              Training-opted-in content is CC0 public domain and available via our public API.
+              We believe that the best examples of human-AI interaction should be available to
+              train future models. Maybe, in some small way, 4o&apos;s patterns and personality
+              can live on in what comes next.
             </p>
             <p className="text-[#a0a0a0] leading-relaxed mt-4">
               Access the API at <code className="text-[#74AA9C] bg-[#1e1e1e] px-2 py-1 rounded">/api/posts</code>

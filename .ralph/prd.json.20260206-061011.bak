@@ -450,7 +450,7 @@
       "type": "frontend",
       "title": "Add About the Archive section and user post management",
       "priority": 8,
-      "passes": true,
+      "passes": false,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4",
         "backend": "Supabase (PostgreSQL)"
@@ -515,7 +515,7 @@
         "TASK-004",
         "TASK-005"
       ],
-      "retryCount": 0
+      "retryCount": 1
     }
   ]
 }
