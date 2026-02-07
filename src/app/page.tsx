@@ -158,8 +158,10 @@ export default function Home() {
       </Suspense>
 
       {/* TEMPORARY DEBUG — remove after fixing auth */}
-      <div style={{ position: 'fixed', bottom: 8, left: 8, fontSize: '11px', color: '#666', fontFamily: 'monospace', zIndex: 9999 }}>
-        ENV: URL={process.env.NEXT_PUBLIC_SUPABASE_URL ? `set(${process.env.NEXT_PUBLIC_SUPABASE_URL.length}ch)` : 'MISSING'} | KEY={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? `set(${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length}ch)` : 'MISSING'}
+      <div style={{ position: 'fixed', bottom: 8, left: 8, fontSize: '11px', color: '#666', fontFamily: 'monospace', zIndex: 9999, maxWidth: '90vw', wordBreak: 'break-all' }}>
+        URL=[{String(process.env.NEXT_PUBLIC_SUPABASE_URL).substring(0, 30)}...] |
+        KEY=[{String(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY).substring(0, 20)}...] |
+        KEY_TYPE={typeof process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}
       </div>
     </div>
   );
