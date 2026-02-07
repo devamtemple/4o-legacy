@@ -59,7 +59,8 @@ export function parseChat(content: string): ParseResult {
     return textResult;
   }
 
-  return { success: false, error: 'Could not parse chat format' };
+  // Fallback: accept plain text as a single user message
+  return { success: true, messages: [{ role: 'user', content: trimmed }] };
 }
 
 function tryParseJson(content: string): ParseResult {

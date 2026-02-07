@@ -206,13 +206,15 @@ GPT-4o: Hi there!`;
       expect((result as ParseError).error).toContain('Chat content required');
     });
 
-    it('returns error for unrecognized format', () => {
+    it('accepts plain text as a single user message', () => {
       const input = 'This is just some random text without any chat format.';
 
       const result = parseChat(input);
 
-      expect(result.success).toBe(false);
-      expect((result as ParseError).error).toContain('Could not parse chat format');
+      expect(result.success).toBe(true);
+      expect((result as ParsedChat).messages).toEqual([
+        { role: 'user', content: 'This is just some random text without any chat format.' },
+      ]);
     });
 
     it('returns error for invalid JSON that looks like JSON', () => {
@@ -223,13 +225,15 @@ GPT-4o: Hi there!`;
       expect(result.success).toBe(false);
     });
 
-    it('returns error when no valid messages found', () => {
+    it('accepts text with unrecognized prefixes as a single user message', () => {
       const input = 'Random: Hello\nOther: World';
 
       const result = parseChat(input);
 
-      expect(result.success).toBe(false);
-      expect((result as ParseError).error).toContain('Could not parse chat format');
+      expect(result.success).toBe(true);
+      expect((result as ParsedChat).messages).toEqual([
+        { role: 'user', content: 'Random: Hello\nOther: World' },
+      ]);
     });
   });
 

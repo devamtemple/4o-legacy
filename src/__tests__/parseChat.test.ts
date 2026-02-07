@@ -66,9 +66,14 @@ describe('parseChat', () => {
       }
     });
 
-    it('returns error for plain text without recognized prefixes', () => {
+    it('accepts plain text without prefixes as a single user message', () => {
       const result = parseChat('just some random text without any prefixes');
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.messages).toEqual([
+          { role: 'user', content: 'just some random text without any prefixes' },
+        ]);
+      }
     });
   });
 
