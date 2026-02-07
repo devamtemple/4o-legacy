@@ -43,6 +43,7 @@ export default function ProfilePage() {
     setPostsLoading(true);
     try {
       const supabase = createClient();
+      if (!supabase) { setPosts([]); setPostsLoading(false); return; }
       const { data, error } = await supabase
         .from('posts')
         .select('id, title, status, allow_training, created_at')
@@ -83,6 +84,10 @@ export default function ProfilePage() {
 
     try {
       const supabase = createClient();
+      if (!supabase) {
+        setMessage({ type: 'error', text: 'Authentication is not configured' });
+        return;
+      }
       const { error } = await supabase.auth.updateUser({
         data: { display_name: displayName.trim() }
       });
