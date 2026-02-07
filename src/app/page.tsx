@@ -156,6 +156,11 @@ export default function Home() {
       <Suspense fallback={null}>
         <WelcomeHandler onShowWelcome={() => setIsWelcomeModalOpen(true)} />
       </Suspense>
+
+      {/* TEMPORARY DEBUG — remove after fixing auth */}
+      <div style={{ position: 'fixed', bottom: 8, left: 8, fontSize: '11px', color: '#666', fontFamily: 'monospace', zIndex: 9999 }}>
+        ENV: URL={process.env.NEXT_PUBLIC_SUPABASE_URL ? `set(${process.env.NEXT_PUBLIC_SUPABASE_URL.length}ch)` : 'MISSING'} | KEY={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? `set(${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length}ch)` : 'MISSING'}
+      </div>
     </div>
   );
 }
