@@ -49,9 +49,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const supabase = createClient();
 
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(transformUser(session?.user ?? null));
+      setLoading(false);
+    }).catch(() => {
       setLoading(false);
     });
 
@@ -71,6 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async (email: string, password: string): Promise<{ error: string | null }> => {
       try {
         const supabase = createClient();
+        if (!supabase) return { error: 'Authentication is not configured' };
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -99,6 +107,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async (email: string, password: string): Promise<{ error: string | null }> => {
       try {
         const supabase = createClient();
+        if (!supabase) return { error: 'Authentication is not configured' };
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -119,6 +128,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signInWithGoogle = useCallback(async (): Promise<{ error: string | null }> => {
     try {
       const supabase = createClient();
+      if (!supabase) return { error: 'Authentication is not configured' };
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -138,6 +148,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signOut = useCallback(async (): Promise<void> => {
     const supabase = createClient();
+    if (!supabase) return;
     await supabase.auth.signOut();
   }, []);
 

@@ -23,7 +23,7 @@ describe('Supabase Browser Client', () => {
   });
 
   describe('createClient', () => {
-    it('should throw an error when NEXT_PUBLIC_SUPABASE_URL is missing', () => {
+    it('should return null when NEXT_PUBLIC_SUPABASE_URL is missing', () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = '';
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
@@ -31,17 +31,17 @@ describe('Supabase Browser Client', () => {
       jest.resetModules();
       const { createClient: freshCreateClient } = require('../client');
 
-      expect(() => freshCreateClient()).toThrow('Supabase configuration missing');
+      expect(freshCreateClient()).toBeNull();
     });
 
-    it('should throw an error when NEXT_PUBLIC_SUPABASE_ANON_KEY is missing', () => {
+    it('should return null when NEXT_PUBLIC_SUPABASE_ANON_KEY is missing', () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = '';
 
       jest.resetModules();
       const { createClient: freshCreateClient } = require('../client');
 
-      expect(() => freshCreateClient()).toThrow('Supabase configuration missing');
+      expect(freshCreateClient()).toBeNull();
     });
 
     it('should create a browser client when env vars are present', () => {
@@ -61,21 +61,18 @@ describe('Supabase Browser Client', () => {
       expect(client).toBeDefined();
     });
 
-    it('should log an error message when configuration is missing', () => {
+    it('should log a warning when configuration is missing', () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = '';
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = '';
 
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       jest.resetModules();
       const { createClient: freshCreateClient } = require('../client');
 
-      try {
-        freshCreateClient();
-      } catch {
-        // Expected to throw
-      }
+      const result = freshCreateClient();
 
+      expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining('Missing Supabase environment variables')
       );
