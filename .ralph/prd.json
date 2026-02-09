@@ -1180,7 +1180,7 @@
       "type": "backend",
       "title": "Update posts feed API to respect privacy and return scrubbed chat",
       "priority": 19,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "runtime": "Node.js",
         "language": "TypeScript",
