@@ -174,7 +174,7 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
         featured_start: featuredStart,
         featured_end: featuredEnd,
         allow_training: allowTraining,
-        attestations: {
+        attestation_data: {
           has_right_to_share: attestations.hasRightToShare,
           agrees_to_terms: attestations.agreesToTerms,
           allow_training: allowTraining,

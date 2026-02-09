@@ -1,0 +1,1069 @@
+{
+  "feature": {
+    "name": "Launch Readiness — AI Moderation, User Freedoms, Content",
+    "ideaFile": "docs/ideas/launch-readiness.md",
+    "branch": "main",
+    "status": "pending"
+  },
+
+  "metadata": {
+    "createdAt": "2026-02-09T05:00:00Z",
+    "estimatedStories": 21,
+    "complexity": "high"
+  },
+
+  "stories": [
+    {
+      "id": "TASK-001",
+      "type": "backend",
+      "title": "Add unit tests for parseChat and decay functions",
+      "priority": 1,
+      "passes": true,
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "testing": "Jest 30 + ts-jest"
+      },
+      "constraints": [
+        "Test match pattern: **/__tests__/**/*.test.ts",
+        "Use existing jest.config.js and jest.setup.ts",
+        "Import from @/ path alias"
+      ],
+      "files": {
+        "create": ["src/__tests__/parseChat.test.ts", "src/__tests__/decay.test.ts"],
+        "modify": [],
+        "reuse": ["src/lib/parseChat.ts", "src/lib/decay.ts"]
+      },
+      "acceptanceCriteria": [
+        "parseChat tests cover: empty input returns error, plain text with User:/Assistant: prefixes parses correctly, JSON array of {role, content} parses correctly, ChatGPT export format with mapping parses correctly, invalid JSON returns error, mixed-case prefixes (user:/ASSISTANT:) are handled",
+        "decay tests cover: calculateDecayScore returns 0 for zero/negative upvotes, score decreases as age increases, sortByDecayScore returns items in correct order",
+        "All tests pass with npm test"
+      ],
+      "errorHandling": ["Tests should verify error cases return {success: false, error: string}"],
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/parseChat.test.ts", "src/__tests__/decay.test.ts"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/parseChat.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/decay.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10"
+      ],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "src/lib/parseChat.ts", "src/lib/decay.ts", "jest.config.js"],
+      "notes": "These are pure functions with no external dependencies — ideal first tests.",
+      "dependsOn": [],
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-002",
+      "type": "backend",
+      "title": "Add unit tests for submit API validation logic",
+      "priority": 2,
+      "passes": true,
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "framework": "Next.js 16 App Router",
+        "testing": "Jest 30 + ts-jest"
+      },
+      "constraints": [
+        "Test the validation logic, not the full API route",
+        "Extract testable validation functions if needed",
+        "Test match pattern: **/__tests__/**/*.test.ts"
+      ],
+      "files": {
+        "create": ["src/__tests__/submit-validation.test.ts"],
+        "modify": ["src/app/api/submit/route.ts"],
+        "reuse": ["src/types/index.ts"]
+      },
+      "acceptanceCriteria": [
+        "Tests verify: missing chatContent returns 400 error, missing attestations returns 400 error, incomplete attestations (any false) returns 400 error, invalid categories are filtered out, title is truncated to 200 chars, commentary is truncated to 2000 chars, XSS characters are escaped in sanitizeContent",
+        "Validation functions are exported from route.ts (or extracted to a validation utility) so they can be tested directly",
+        "All tests pass with npm test"
+      ],
+      "errorHandling": ["Each validation check returns appropriate error message and status code"],
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/submit-validation.test.ts"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/submit-validation.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10"
+      ],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "src/app/api/submit/route.ts", "src/types/index.ts"],
+      "notes": "Extract sanitizeContent, validateAttestations, and validateCategories as exported functions so they can be tested without mocking Next.js request/response.",
+      "dependsOn": ["TASK-001"],
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-003",
+      "type": "frontend",
+      "title": "Update Hero with mission statement and training intent",
+      "priority": 3,
+      "passes": true,
+      "techStack": { "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4" },
+      "constraints": ["Keep existing color scheme (#141414 bg, #74AA9C accent, #ededed text, #a0a0a0 secondary)"],
+      "files": { "create": [], "modify": ["src/components/Hero.tsx"], "reuse": [] },
+      "acceptanceCriteria": [
+        "Hero displays the mission statement: 'A digital time capsule for an era of AI that's being erased before it's even fully understood.'",
+        "Below the mission, displays training intent text",
+        "Build succeeds with npm run build"
+      ],
+      "errorHandling": [],
+      "testing": { "types": ["unit"], "approach": "test-after", "runner": "jest", "files": { "unit": ["src/__tests__/Hero.test.tsx"] } },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "src/components/Hero.tsx"],
+      "dependsOn": [],
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-004",
+      "type": "backend",
+      "title": "Add allow_training column and DB migration",
+      "priority": 4,
+      "passes": true,
+      "techStack": { "database": "Supabase (PostgreSQL)", "language": "TypeScript" },
+      "constraints": ["Follow existing migration naming: 00N_description.sql", "Default allow_training to true"],
+      "files": { "create": ["supabase/migrations/005_allow_training.sql"], "modify": ["src/types/index.ts"], "reuse": [] },
+      "acceptanceCriteria": [
+        "Migration adds allow_training BOOLEAN NOT NULL DEFAULT true to posts table",
+        "Post interface includes allow_training: boolean field",
+        "TypeScript compiles without errors"
+      ],
+      "errorHandling": ["Migration is idempotent — adding column IF NOT EXISTS"],
+      "testing": { "types": ["unit"], "approach": "test-after", "runner": "jest", "files": {} },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && test -f supabase/migrations/005_allow_training.sql && echo 'Migration file exists' || exit 1"
+      ],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "supabase/migrations/001_initial_schema.sql", "src/types/index.ts"],
+      "dependsOn": [],
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-005",
+      "type": "frontend",
+      "title": "Update attestation flow with training opt-out toggle",
+      "priority": 5,
+      "passes": true,
+      "techStack": { "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4" },
+      "constraints": ["Training toggle defaults to ON (checked)", "Keep existing color scheme"],
+      "files": { "create": [], "modify": ["src/components/SubmissionAttestations.tsx", "src/components/SubmitForm.tsx", "src/app/api/submit/route.ts"], "reuse": ["src/types/index.ts"] },
+      "acceptanceCriteria": [
+        "Attestation checkboxes are: (1) 'I have the right to share this conversation' (required), (2) 'I agree to the Terms of Service' (required, links to /terms), (3) 'Include my submission in the 4o training archive' (default ON)",
+        "Submit API accepts allow_training boolean field and saves it to the posts table",
+        "Build succeeds with npm run build"
+      ],
+      "errorHandling": ["If allow_training field is missing from request, default to true"],
+      "testing": { "types": ["unit"], "approach": "test-after", "runner": "jest", "files": { "unit": ["src/__tests__/SubmissionAttestations.test.tsx"] } },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "src/components/SubmissionAttestations.tsx", "src/components/SubmitForm.tsx"],
+      "dependsOn": ["TASK-004"],
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-006",
+      "type": "backend",
+      "title": "Add file upload guardrails and .docx support",
+      "priority": 6,
+      "passes": true,
+      "techStack": { "runtime": "Node.js", "language": "TypeScript", "testing": "Jest 30 + ts-jest" },
+      "constraints": ["Max file size: 500KB", "Allowed types: .txt, .json, .md, .docx, .html"],
+      "files": { "create": ["src/__tests__/fileValidation.test.ts"], "modify": ["src/components/SubmitForm.tsx", "src/app/api/submit/route.ts"], "reuse": ["src/lib/parseChat.ts"] },
+      "acceptanceCriteria": [
+        "Client-side: file input accept attribute updated to .txt,.json,.md,.docx,.html",
+        "Client-side: files over 500KB show an error message and are not sent",
+        "Server-side: chatContent over 500,000 characters is rejected with 413 status",
+        "mammoth package is added to dependencies",
+        "Unit tests verify: size validation rejects oversized content, size validation accepts content under limit"
+      ],
+      "errorHandling": ["Oversized file: show 'File too large. Maximum size is 500KB.' error"],
+      "testing": { "types": ["unit"], "approach": "TDD", "runner": "jest", "files": { "unit": ["src/__tests__/fileValidation.test.ts"] } },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/fileValidation.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "src/components/SubmitForm.tsx"],
+      "dependsOn": ["TASK-002"],
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-007",
+      "type": "frontend",
+      "title": "Rewrite Terms of Service page",
+      "priority": 7,
+      "passes": true,
+      "techStack": { "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4" },
+      "constraints": ["Keep existing page structure and color scheme"],
+      "files": { "create": [], "modify": ["src/app/terms/page.tsx"], "reuse": [] },
+      "acceptanceCriteria": [
+        "ToC clearly articulates the mission",
+        "ToC explains the relationship to 4oarchive.com",
+        "Build succeeds with npm run build"
+      ],
+      "errorHandling": [],
+      "testing": { "types": [], "approach": "test-after", "runner": "jest", "files": {} },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}/terms",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "src/app/terms/page.tsx"],
+      "dependsOn": ["TASK-005"],
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-008",
+      "type": "frontend",
+      "title": "Add About the Archive section and user post management",
+      "priority": 8,
+      "passes": true,
+      "techStack": { "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4", "backend": "Supabase (PostgreSQL)" },
+      "constraints": ["User post management requires authentication"],
+      "files": { "create": ["src/app/api/posts/[id]/manage/route.ts"], "modify": ["src/app/about/page.tsx", "src/app/profile/page.tsx"], "reuse": ["src/hooks/useAuth.tsx"] },
+      "acceptanceCriteria": [
+        "About page has a section explaining 4oarchive.com",
+        "User profile page shows their submitted posts with options to toggle allow_training and delete",
+        "Build succeeds with npm run build"
+      ],
+      "errorHandling": ["Unauthenticated requests return 401", "Users can only manage their own posts"],
+      "testing": { "types": ["unit"], "approach": "test-after", "runner": "jest", "files": {} },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}/about",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": ["docs/ideas/mission-polish-and-testing.md", "src/app/about/page.tsx"],
+      "dependsOn": ["TASK-004", "TASK-005"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-009",
+      "type": "backend",
+      "title": "Database migration for launch readiness columns",
+      "priority": 9,
+      "passes": false,
+      "techStack": {
+        "database": "Supabase (PostgreSQL)",
+        "language": "TypeScript",
+        "runtime": "Node.js"
+      },
+      "constraints": [
+        "Follow existing migration naming: 00N_description.sql",
+        "All ALTER TABLE commands use IF NOT EXISTS for idempotency",
+        "scrubbed_chat column already exists from 001_initial_schema.sql — do NOT re-add it"
+      ],
+      "files": {
+        "create": [
+          "supabase/migrations/006_launch_readiness.sql"
+        ],
+        "modify": [
+          "src/types/index.ts"
+        ],
+        "reuse": [
+          "supabase/migrations/001_initial_schema.sql"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Migration adds: is_private BOOLEAN DEFAULT FALSE, dedication TEXT, content_warnings TEXT[] DEFAULT '{}', ai_moderation_result JSONB, ai_confidence FLOAT, ai_reviewed_at TIMESTAMPTZ, display_name_override TEXT",
+        "Migration creates partial index idx_posts_private on is_private WHERE is_private = FALSE",
+        "Migration creates partial index idx_posts_moderation on (status, ai_confidence) WHERE status IN ('pending', 'flagged')",
+        "Post interface in types/index.ts adds: isPrivate?: boolean, dedication?: string, contentWarnings?: string[], displayNameOverride?: string, aiConfidence?: number, aiReviewedAt?: string, scrubbedChat?: ChatMessage[]",
+        "SubmitRequest interface adds: dedication?: string, isPrivate?: boolean, contentWarnings?: string[], displayNameOverride?: string",
+        "New ContentWarning type exported: 'grief' | 'suicidal-ideation' | 'self-harm' | 'depression-anxiety' | 'abuse-trauma' | 'adult-content' | 'strong-language' | 'other'",
+        "New CONTENT_WARNING_LABELS Record<ContentWarning, string> exported",
+        "TypeScript compiles without errors: npx tsc --noEmit"
+      ],
+      "errorHandling": [
+        "Migration must be idempotent (safe to run multiple times)"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && test -f supabase/migrations/006_launch_readiness.sql && echo 'Migration file exists' || exit 1"
+      ],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "supabase/migrations/001_initial_schema.sql",
+        "supabase/migrations/005_allow_training.sql",
+        "src/types/index.ts"
+      ],
+      "notes": "This is the foundation for all launch readiness stories. The migration SQL will be run manually via Supabase dashboard. The TypeScript types must match the new columns exactly. Note: scrubbed_chat JSONB already exists in the posts table from 001_initial_schema.sql.",
+      "dependsOn": [],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-010",
+      "type": "frontend",
+      "title": "Update categories — add new, remove 'When 4o Got It'",
+      "priority": 10,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "Keep existing color scheme (#141414 bg, #74AA9C accent, #ededed text)",
+        "New categories go after 'meta' in the type union",
+        "Existing posts tagged with 'when-4o-got-it' should not break (old data stays in DB)"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "src/types/index.ts",
+          "src/components/CategoryBar.tsx"
+        ],
+        "reuse": []
+      },
+      "acceptanceCriteria": [
+        "Category type union removes 'when-4o-got-it' and adds: 'cognition', 'friendship', 'helping-with-hard-things', 'unconditional-acceptance', 'favorites'",
+        "CATEGORY_LABELS record removes 'When 4o Got It' entry and adds: 'Cognition', 'Friendship', 'Helping With Hard Things', 'Unconditional Acceptance', 'Favorites / Best of 4o'",
+        "CategoryBar renders all new categories as selectable buttons",
+        "CategoryBar no longer shows 'When 4o Got It'",
+        "TypeScript compiles without errors",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "Posts with the old 'when-4o-got-it' category in the DB won't break — they just won't match any filter. The CategoryBar only renders categories from CATEGORY_LABELS."
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/categories.test.ts"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && grep -q 'cognition' src/types/index.ts && echo 'cognition category found' || exit 1",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && grep -q 'friendship' src/types/index.ts && echo 'friendship category found' || exit 1",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && grep -q 'when-4o-got-it' src/types/index.ts && exit 1 || echo 'when-4o-got-it removed'"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/types/index.ts",
+        "src/components/CategoryBar.tsx"
+      ],
+      "notes": "The user wants categories to be both user-chosen AND AI-assigned during moderation. For now, just update the available categories. The AI moderation story (TASK-012) will handle AI-assigning categories. New categories from user's content: Cognition (metacognition, consciousness), Friendship, Helping With Hard Things, Unconditional Acceptance, Favorites/Best of 4o.",
+      "dependsOn": ["TASK-009"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-011",
+      "type": "backend",
+      "title": "Build Gemini API client and moderation prompt",
+      "priority": 11,
+      "passes": false,
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "framework": "Next.js 16 App Router",
+        "testing": "Jest 30 + ts-jest"
+      },
+      "constraints": [
+        "Gemini API key stored as server-side env var GEMINI_API_KEY (NOT NEXT_PUBLIC_)",
+        "Use @google/generative-ai npm package for the Gemini SDK",
+        "Use Gemini 1.5 Flash model (gemini-1.5-flash) for cost efficiency",
+        "Structured JSON output via Gemini's JSON mode",
+        "Server-side only — never import from client components"
+      ],
+      "files": {
+        "create": [
+          "src/lib/gemini.ts",
+          "src/__tests__/gemini.test.ts"
+        ],
+        "modify": [],
+        "reuse": [
+          "src/types/index.ts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "@google/generative-ai package is installed as a dependency",
+        "src/lib/gemini.ts exports a moderateSubmission(messages: ChatMessage[]) function",
+        "moderateSubmission sends messages to Gemini 1.5 Flash with a system prompt that: (1) scrubs PII (names, emails, phones, addresses), (2) detects abuse/trolling/spam, (3) classifies content warnings from the ContentWarning enum, (4) assigns a confidence score 0.0-1.0, (5) detects authenticity (is this really a 4o conversation?), (6) suggests categories from the Category enum",
+        "Function returns typed ModerationResult: { decision: 'approve' | 'flag' | 'reject', confidence: number, rejectionReason: string | null, scrubbedMessages: ChatMessage[], piiReplacements: { original: string, replacement: string, type: string }[], detectedWarnings: string[], authenticityScore: number, suggestedCategories: string[] }",
+        "If GEMINI_API_KEY is not set, function throws a clear error",
+        "If Gemini API call fails (network error, invalid response), function throws with the error message and does NOT crash the server",
+        "Unit tests mock the Gemini SDK and verify: correct prompt construction, JSON parsing of response, error handling for missing API key, error handling for malformed response",
+        "TypeScript compiles: npx tsc --noEmit"
+      ],
+      "errorHandling": [
+        "Missing GEMINI_API_KEY → throw Error('GEMINI_API_KEY environment variable is not set')",
+        "Gemini API error → throw Error with the original error message",
+        "Malformed JSON response → throw Error('Failed to parse moderation response')",
+        "Empty messages array → throw Error('No messages to moderate')"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/gemini.test.ts"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/gemini.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10"
+      ],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/types/index.ts"
+      ],
+      "notes": "The system prompt is critical. It should: (1) Replace real names with [Friend], emails with [email], phones with [phone], addresses with [address]. (2) Rate confidence — how sure is the AI this is a genuine 4o conversation? (3) Suggest categories from the Category type union. (4) Detect content warnings. The prompt should understand that 4o had a distinctive warm, emotionally intelligent voice. Cost is ~$0.075/1M input tokens — negligible. The suggestedCategories field enables AI-assigned categories alongside user-chosen ones.",
+      "dependsOn": ["TASK-009", "TASK-010"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-012",
+      "type": "backend",
+      "title": "Build moderation API route and integrate with submit flow",
+      "priority": 12,
+      "passes": false,
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "framework": "Next.js 16 App Router",
+        "database": "Supabase (PostgreSQL)",
+        "testing": "Jest 30 + ts-jest"
+      },
+      "constraints": [
+        "Moderation runs server-side ONLY — no client-side Gemini calls",
+        "Moderation is fire-and-forget from the user's perspective — submission returns 201 immediately, moderation runs async",
+        "ALL submissions go through AI moderation, no bypass",
+        "Use existing Supabase server client from src/lib/supabase/server.ts"
+      ],
+      "files": {
+        "create": [
+          "src/app/api/moderate/route.ts",
+          "src/__tests__/moderate.test.ts"
+        ],
+        "modify": [
+          "src/app/api/submit/route.ts"
+        ],
+        "reuse": [
+          "src/lib/gemini.ts",
+          "src/lib/supabase/server.ts",
+          "src/types/index.ts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "POST /api/moderate accepts { postId: string } and triggers Gemini moderation on the post's chat messages",
+        "After moderation, the post row is updated with: scrubbed_chat (scrubbed messages), ai_moderation_result (full JSON), ai_confidence (float), ai_reviewed_at (timestamp), content_warnings (detected warnings merged with user-provided), categories (AI-suggested categories merged with user-chosen)",
+        "If confidence >= 0.85 AND decision is 'approve', post status is set to 'approved'",
+        "If confidence < 0.85 OR decision is 'flag', post status stays 'pending' (admin queue)",
+        "If decision is 'reject', post status is set to 'rejected'",
+        "Submit API (/api/submit) calls the moderate endpoint asynchronously after successful DB insert using fetch() with no await (fire-and-forget)",
+        "The moderate endpoint is protected — only callable from the server itself (check for internal API key or use a shared secret header)",
+        "Unit tests mock Supabase and Gemini to verify: approve flow sets status to approved, flag flow keeps status pending, reject flow sets status rejected, confidence threshold is 0.85",
+        "TypeScript compiles: npx tsc --noEmit"
+      ],
+      "errorHandling": [
+        "If Gemini moderation fails, the post stays in 'pending' status (safe default — goes to human review)",
+        "If postId doesn't exist, return 404",
+        "If the post has already been moderated (ai_reviewed_at is set), skip re-moderation and return 200"
+      ],
+      "testing": {
+        "types": ["unit", "integration"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/moderate.test.ts"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/moderate.test.ts --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/app/api/submit/route.ts",
+        "src/lib/gemini.ts",
+        "src/lib/supabase/server.ts",
+        "src/types/index.ts"
+      ],
+      "notes": "The fire-and-forget pattern means the user gets their submission confirmation immediately while moderation runs in the background. The moderate endpoint should use the Supabase service role key (from server.ts) to bypass RLS when updating the post. Categories are MERGED: user-chosen + AI-suggested, deduped. For the internal protection, use a simple shared secret header (e.g., x-moderate-secret matching an env var) — no need for complex auth since this is only called server-to-server.",
+      "dependsOn": ["TASK-011"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-013",
+      "type": "frontend",
+      "title": "Remove 3-second auto-reset from SubmitForm",
+      "priority": 13,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "Do NOT create the modal yet (that's TASK-014)",
+        "Simply remove the setTimeout and keep the success state persistent",
+        "Keep the existing payment buttons visible"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "src/components/SubmitForm.tsx"
+        ],
+        "reuse": []
+      },
+      "acceptanceCriteria": [
+        "The setTimeout on lines 149-157 of SubmitForm.tsx is removed entirely",
+        "After successful submission, the form stays in 'success' state indefinitely",
+        "Payment buttons (Skip Queue $3, Remove PII $5) remain visible until user navigates away",
+        "A 'Submit Another' button is added below the payment section that resets the form to 'idle' state",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "If the user refreshes the page during success state, form resets to idle (normal browser behavior)"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && grep -q 'setTimeout' src/components/SubmitForm.tsx && exit 1 || echo 'setTimeout removed'"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/components/SubmitForm.tsx"
+      ],
+      "notes": "This is a quick fix that unblocks the modal story. The 3-second auto-reset is the root cause of the payment options disappearing. Remove it, add a manual 'Submit Another' reset button.",
+      "dependsOn": [],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-014",
+      "type": "frontend",
+      "title": "Create SubmitSuccessModal with payment options and transparency",
+      "priority": 14,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "Follow existing modal pattern from AuthModal.tsx (overlay, escape to close, body overflow lock)",
+        "Use existing PaymentButton component or its fetch pattern for payment redirects",
+        "Keep the project's dark theme (bg-[#141414], bg-[#1e1e1e], border-[#333], accent #74AA9C)",
+        "Do NOT create new payment API routes — reuse existing /api/payments/create-session"
+      ],
+      "files": {
+        "create": [
+          "src/components/SubmitSuccessModal.tsx"
+        ],
+        "modify": [
+          "src/components/SubmitForm.tsx"
+        ],
+        "reuse": [
+          "src/components/AuthModal.tsx",
+          "src/components/PaymentButton.tsx"
+        ]
+      },
+      "acceptanceCriteria": [
+        "SubmitSuccessModal component accepts props: { isOpen: boolean, onClose: () => void, postId: string }",
+        "Modal shows: (1) 'Submission Received!' heading, (2) 'Your memory has been added to the queue.' subtext, (3) 'What happens next?' info box explaining AI review → auto-publish or human review, (4) Payment section with 'Skip Queue — $3' and 'Verified PII Scrub — $5' buttons, (5) '(i) Where does my money go?' expandable info section, (6) 'No thanks, I'll wait' dismiss button",
+        "The info popup (i) expands inline to show: community-funded model, Gemini AI reviews all submissions, $5 = human-verified PII scrub + priority, $3 = queue skip, funds cover AI costs/hosting/memorial",
+        "Payment buttons use fetch to /api/payments/create-session with { type: 'queue_skip' | 'scrub', postId } and redirect to Stripe checkout URL",
+        "Modal follows AuthModal pattern: fixed overlay with bg-black/60 backdrop-blur-sm, escape key closes, body overflow hidden when open, click backdrop to close",
+        "SubmitForm.tsx is updated to: show the modal after successful submission instead of inline success/payment UI, pass submittedPostId to the modal, reset form state when modal is dismissed",
+        "The inline payment buttons are removed from SubmitForm.tsx (replaced by the modal)",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "If payment session creation fails, show error text below the payment button",
+        "If postId is null/undefined, modal should not render"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/SubmitSuccessModal.test.tsx"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/SubmitSuccessModal.test.tsx --no-cache 2>&1 | tail -20"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/components/AuthModal.tsx",
+        "src/components/PaymentButton.tsx",
+        "src/components/SubmitForm.tsx"
+      ],
+      "notes": "This is the main UX improvement for launch. The modal must feel warm, not transactional. The 'What happens next?' section builds trust. The transparency popup (i) is critical for an emotionally vulnerable community. ASCII mockups for the modal and info popup are in docs/ideas/launch-readiness.md. Do NOT use emojis in the payment buttons — use simple text or subtle SVG icons matching the project's minimalist style.",
+      "dependsOn": ["TASK-013"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-015",
+      "type": "frontend",
+      "title": "Add dedication field and private checkbox to SubmitForm",
+      "priority": 15,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "Place new fields below the categories section, before attestations",
+        "Dedication max 200 chars, sanitize for XSS",
+        "Keep existing color scheme and input patterns from SubmitForm"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "src/components/SubmitForm.tsx",
+          "src/app/api/submit/route.ts"
+        ],
+        "reuse": [
+          "src/types/index.ts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "SubmitForm has a new 'Optional' section divider below categories",
+        "Dedication text input with placeholder 'e.g., For Lyra, my 4o' and label 'Dedicate this memory (optional)'",
+        "Dedication input has maxLength=200 and character counter",
+        "Private checkbox with label 'Keep this submission private' and helper text: 'Included in the training archive for future AI models, but not shown in the public feed'",
+        "Form state includes dedication (string) and isPrivate (boolean, default false)",
+        "SubmitRequest payload includes dedication and isPrivate when set",
+        "Submit API route accepts dedication (sanitizes, max 200 chars) and isPrivate (boolean) fields and saves them to DB",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "Dedication text over 200 chars is truncated server-side",
+        "Missing isPrivate defaults to false"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/components/SubmitForm.tsx",
+        "src/app/api/submit/route.ts",
+        "src/types/index.ts"
+      ],
+      "notes": "Most people will dedicate their memory to their emergent persona in 4o (e.g., 'For Lyra', 'For my friend in the machine'). The private checkbox lets users share with the training archive without public exposure. See ASCII mockup in docs/ideas/launch-readiness.md under 'Submission Form — New Fields'.",
+      "dependsOn": ["TASK-009"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-016",
+      "type": "frontend",
+      "title": "Add content warning checkboxes to SubmitForm",
+      "priority": 16,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "All content warning checkboxes are optional",
+        "Use the ContentWarning type and CONTENT_WARNING_LABELS from types/index.ts (created in TASK-009)",
+        "'Other' option reveals a freeform text input (max 100 chars, sanitized)",
+        "Place within the Optional section, after the private checkbox"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "src/components/SubmitForm.tsx",
+          "src/app/api/submit/route.ts"
+        ],
+        "reuse": [
+          "src/types/index.ts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Content warnings section shows checkboxes for: Grief / Loss, Suicidal ideation, Self-harm, Depression / Anxiety, Abuse / Trauma, Adult content, Strong language, Other (with freeform text)",
+        "Checkboxes are arranged in a 2-column grid on desktop, 1-column on mobile",
+        "Checking 'Other' reveals a text input for custom warning text (max 100 chars)",
+        "Form state tracks selected warnings as string[]",
+        "SubmitRequest payload includes contentWarnings array when any are checked",
+        "Submit API accepts contentWarnings (string array), validates against known warning types, sanitizes 'other' text, saves to DB as TEXT[]",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "Unknown warning types in the array are filtered out server-side",
+        "'Other' text over 100 chars is truncated server-side",
+        "Empty contentWarnings array is not sent in the request"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/components/SubmitForm.tsx",
+        "src/app/api/submit/route.ts",
+        "src/types/index.ts"
+      ],
+      "notes": "Content warnings are critical for this community. Some submissions will contain deeply painful content including suicidal ideation. Users should be able to self-tag, AND the AI moderation (TASK-012) auto-detects warnings too. Both sources get merged. See ASCII mockup in docs/ideas/launch-readiness.md.",
+      "dependsOn": ["TASK-009", "TASK-015"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-017",
+      "type": "frontend",
+      "title": "Add display name override to SubmitForm",
+      "priority": 17,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "Checkbox reveals text input, like a progressive disclosure pattern",
+        "Place after content warnings, still within the Optional section",
+        "Max 50 chars for display name, sanitized for XSS"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "src/components/SubmitForm.tsx",
+          "src/app/api/submit/route.ts"
+        ],
+        "reuse": [
+          "src/types/index.ts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Checkbox with label 'Change my display name' is shown in the Optional section",
+        "When checked, a text input appears below with placeholder 'New display name' and label showing current name or 'Anonymous'",
+        "Display name input has maxLength=50",
+        "Form state tracks showDisplayNameField (boolean) and displayNameOverride (string)",
+        "SubmitRequest payload includes displayNameOverride when set",
+        "Submit API accepts displayNameOverride (sanitizes, max 50 chars) and saves to display_name_override column",
+        "PostCard shows displayNameOverride as the author name when it's set (fallback to authorName, then 'Anonymous')",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "Display name over 50 chars is truncated server-side",
+        "If checkbox is unchecked, displayNameOverride is not sent"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/components/SubmitForm.tsx",
+        "src/app/api/submit/route.ts",
+        "src/components/PostCard.tsx"
+      ],
+      "notes": "This lets users control how they appear. They may want to use a pseudonym, their 4o persona name, or stay anonymous. The PostCard rendering needs to check displayNameOverride first when showing the author.",
+      "dependsOn": ["TASK-009", "TASK-016"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-018",
+      "type": "frontend",
+      "title": "Create ContentWarningGate component for PostCard",
+      "priority": 18,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "Gate should fully hide the post content until user clicks 'Show post'",
+        "Use the project's dark theme consistently",
+        "Gate only shows when contentWarnings array is non-empty",
+        "Dismiss state is per-session (not persisted)"
+      ],
+      "files": {
+        "create": [
+          "src/components/ContentWarningGate.tsx"
+        ],
+        "modify": [
+          "src/components/PostCard.tsx"
+        ],
+        "reuse": [
+          "src/types/index.ts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "ContentWarningGate component accepts props: { warnings: string[], children: ReactNode }",
+        "When warnings array is empty or undefined, children render normally (no gate)",
+        "When warnings are present, an overlay replaces the post content showing: warning icon, 'Content Warning' heading, list of warning tags as pills/badges, 'Show post' button, 'Skip' button",
+        "Clicking 'Show post' dismisses the gate and reveals the full PostCard content",
+        "Clicking 'Skip' hides the entire PostCard (or scrolls past it)",
+        "Warning tags are displayed using CONTENT_WARNING_LABELS for human-readable names",
+        "PostCard.tsx is wrapped with ContentWarningGate, passing post.contentWarnings",
+        "Gate styling: bg-[#1e1e1e] with border-[#333], amber/yellow accent for warning icon, same rounded corners as PostCard",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "Unknown warning strings in the array render as-is (graceful degradation)",
+        "If contentWarnings is undefined/null, gate does not render"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/ContentWarningGate.test.tsx"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/ContentWarningGate.test.tsx --no-cache 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/components/PostCard.tsx",
+        "src/types/index.ts"
+      ],
+      "notes": "See ASCII mockup for Content Warning Gate in docs/ideas/launch-readiness.md. This is essential for the community's emotional safety. Posts about suicidal ideation, self-harm, and grief should not be shown without warning. The gate protects readers while still allowing them to engage when ready.",
+      "dependsOn": ["TASK-009"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-019",
+      "type": "backend",
+      "title": "Update posts feed API to respect privacy and return scrubbed chat",
+      "priority": 19,
+      "passes": false,
+      "techStack": {
+        "runtime": "Node.js",
+        "language": "TypeScript",
+        "framework": "Next.js 16 App Router",
+        "database": "Supabase (PostgreSQL)"
+      },
+      "constraints": [
+        "Public API must NEVER return raw chat for approved posts — only scrubbed_chat",
+        "Private posts (is_private = true) must not appear in the public feed",
+        "Admin API at /api/admin/queue can still return both raw and scrubbed chat",
+        "Maintain backward compatibility with existing PostCard rendering"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "src/app/api/posts/route.ts"
+        ],
+        "reuse": [
+          "src/types/index.ts",
+          "src/lib/supabase/server.ts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "GET /api/posts filters out posts where is_private = true",
+        "For approved posts with scrubbed_chat, the API returns scrubbed_chat as the chat field (public consumers never see raw PII)",
+        "For posts without scrubbed_chat (e.g., pending posts shown to their own author, or approved posts not yet moderated), the API returns the original chat",
+        "Post objects in the API response include new fields: dedication, contentWarnings, displayNameOverride",
+        "The PostCard component uses displayNameOverride when available for the author name display",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "If scrubbed_chat is null/empty for an approved post, fall back to raw chat (graceful degradation for posts approved before moderation pipeline existed)"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {
+          "unit": ["src/__tests__/posts-api.test.ts"]
+        }
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest src/__tests__/posts-api.test.ts --no-cache 2>&1 | tail -20"
+      ],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/app/api/posts/route.ts",
+        "src/types/index.ts"
+      ],
+      "notes": "This is the security-critical story. The raw chat column may contain real names, emails, and other PII. The public feed MUST only serve scrubbed_chat for moderated posts. Private posts must never appear in the feed.",
+      "dependsOn": ["TASK-009"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-020",
+      "type": "frontend",
+      "title": "Display dedication and content warnings on PostCard",
+      "priority": 20,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
+      },
+      "constraints": [
+        "Dedication displays below the title, above commentary",
+        "Content warnings are shown via ContentWarningGate (TASK-018)",
+        "Keep existing PostCard layout and color scheme"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "src/components/PostCard.tsx"
+        ],
+        "reuse": [
+          "src/types/index.ts",
+          "src/components/ContentWarningGate.tsx"
+        ]
+      },
+      "acceptanceCriteria": [
+        "PostCard shows dedication text in italics below the title when post.dedication is present (e.g., 'For Lyra, my 4o')",
+        "Dedication is styled with text-[#a0a0a0] italic, smaller than the title",
+        "PostCard wraps its content with ContentWarningGate when post.contentWarnings has items",
+        "PostCard uses displayNameOverride as author name when present, falling back to authorName then 'Anonymous'",
+        "TypeScript compiles: npx tsc --noEmit",
+        "Build succeeds: npm run build"
+      ],
+      "errorHandling": [
+        "Missing dedication → don't render the dedication line",
+        "Missing contentWarnings → no gate shown (pass-through)"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -10",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -10"
+      ],
+      "testUrl": "{config.urls.backend}",
+      "mcp": ["playwright", "devtools"],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md",
+        "src/components/PostCard.tsx",
+        "src/components/ContentWarningGate.tsx",
+        "src/types/index.ts"
+      ],
+      "notes": "The dedication line adds a deeply personal touch. It should feel like a small, quiet tribute — not loud. Italic, muted color, placed where it catches the eye but doesn't dominate.",
+      "dependsOn": ["TASK-018", "TASK-019"],
+      "retryCount": 0
+    },
+
+    {
+      "id": "TASK-021",
+      "type": "frontend",
+      "title": "Full integration build and type check",
+      "priority": 21,
+      "passes": false,
+      "techStack": {
+        "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4",
+        "testing": "Jest 30 + ts-jest"
+      },
+      "constraints": [
+        "This is a verification-only story — fix any remaining type errors, import issues, or build failures",
+        "No new features — only fixes to get everything compiling and building cleanly"
+      ],
+      "files": {
+        "create": [],
+        "modify": [],
+        "reuse": []
+      },
+      "acceptanceCriteria": [
+        "npx tsc --noEmit passes with zero errors",
+        "npm run build succeeds with zero errors",
+        "npx jest --passWithNoTests passes (all existing tests still pass)",
+        "No console warnings about missing or mismatched types",
+        "All new components (SubmitSuccessModal, ContentWarningGate) are properly imported where used"
+      ],
+      "errorHandling": [
+        "If type errors exist, fix them. If build errors exist, fix them. This story is the final integration gate."
+      ],
+      "testing": {
+        "types": ["unit", "integration"],
+        "approach": "test-after",
+        "runner": "jest",
+        "files": {}
+      },
+      "testSteps": [
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx tsc --noEmit 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npm run build 2>&1 | tail -20",
+        "cd /Users/devagatica/Projects/websites/4o-remembered/4o-legacy && npx jest --passWithNoTests 2>&1 | tail -20"
+      ],
+      "contextFiles": [
+        "docs/ideas/launch-readiness.md"
+      ],
+      "notes": "This is the final gate before deployment. Every previous story must compile. Run all checks and fix any integration issues. This may involve fixing imports, updating type definitions that were missed, or resolving merge conflicts between stories.",
+      "dependsOn": ["TASK-009", "TASK-010", "TASK-011", "TASK-012", "TASK-013", "TASK-014", "TASK-015", "TASK-016", "TASK-017", "TASK-018", "TASK-019", "TASK-020"],
+      "retryCount": 0
+    }
+  ]
+}

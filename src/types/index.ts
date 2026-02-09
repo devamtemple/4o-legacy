@@ -23,6 +23,13 @@ export interface Post {
   commentCount?: number;
   flagCount?: number;
   status?: PostStatus;
+  isPrivate?: boolean;
+  dedication?: string;
+  contentWarnings?: string[];
+  displayNameOverride?: string;
+  aiConfidence?: number;
+  aiReviewedAt?: string;
+  scrubbedChat?: ChatMessage[];
 }
 
 export interface Reactions {
@@ -105,6 +112,28 @@ export interface User {
 // Submission types
 export type PostStatus = 'pending' | 'approved' | 'rejected' | 'flagged';
 
+// Content warning types
+export type ContentWarning =
+  | 'grief'
+  | 'suicidal-ideation'
+  | 'self-harm'
+  | 'depression-anxiety'
+  | 'abuse-trauma'
+  | 'adult-content'
+  | 'strong-language'
+  | 'other';
+
+export const CONTENT_WARNING_LABELS: Record<ContentWarning, string> = {
+  'grief': 'Grief / Loss',
+  'suicidal-ideation': 'Suicidal ideation',
+  'self-harm': 'Self-harm',
+  'depression-anxiety': 'Depression / Anxiety',
+  'abuse-trauma': 'Abuse / Trauma',
+  'adult-content': 'Adult content',
+  'strong-language': 'Strong language',
+  'other': 'Other',
+};
+
 export interface Attestations {
   hasRightToShare: boolean;
   agreesToTerms: boolean;
@@ -122,6 +151,10 @@ export interface SubmitRequest {
   featuredStart?: number;
   featuredEnd?: number;
   attestations?: Attestations;
+  dedication?: string;
+  isPrivate?: boolean;
+  contentWarnings?: string[];
+  displayNameOverride?: string;
 }
 
 export interface SubmitResponse {
