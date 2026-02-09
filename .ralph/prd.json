@@ -1036,7 +1036,7 @@
       "type": "frontend",
       "title": "Add display name override to SubmitForm",
       "priority": 17,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },
