@@ -9,12 +9,13 @@ import {
   ReactNode,
 } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import type { User as SupabaseUser, Session, SupabaseClient } from '@supabase/supabase-js';
 
 export interface AuthUser {
   id: string;
   email: string;
   displayName?: string;
+  role?: string;
 }
 
 interface AuthContextType {
@@ -38,6 +39,26 @@ function transformUser(supabaseUser: SupabaseUser | null): AuthUser | null {
   };
 }
 
+async function fetchUserWithRole(
+  supabase: SupabaseClient,
+  session: Session | null,
+): Promise<AuthUser | null> {
+  const authUser = transformUser(session?.user ?? null);
+  if (!authUser) return null;
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', authUser.id)
+    .single();
+
+  if (data?.role) {
+    authUser.role = data.role;
+  }
+
+  return authUser;
+}
+
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -55,8 +76,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(transformUser(session?.user ?? null));
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setUser(await fetchUserWithRole(supabase, session));
       setLoading(false);
     }).catch(() => {
       setLoading(false);
@@ -65,8 +86,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: string, session: Session | null) => {
-      setUser(transformUser(session?.user ?? null));
+    } = supabase.auth.onAuthStateChange(async (_event: string, session: Session | null) => {
+      setUser(await fetchUserWithRole(supabase, session));
     });
 
     return () => {

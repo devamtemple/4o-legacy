@@ -58,6 +58,14 @@ export default function Home() {
               <span className="text-[#666]">...</span>
             ) : user ? (
               <div className="flex items-center gap-4">
+                {user.role === 'admin' && (
+                  <Link
+                    href="/admin/queue"
+                    className="text-[#74AA9C] hover:text-[#8bc4b6] transition-colors text-sm font-medium"
+                  >
+                    Review Submissions
+                  </Link>
+                )}
                 <span className="text-[#a0a0a0] text-sm" data-testid="user-info">
                   {user.displayName || user.email}
                 </span>
@@ -157,12 +165,6 @@ export default function Home() {
         <WelcomeHandler onShowWelcome={() => setIsWelcomeModalOpen(true)} />
       </Suspense>
 
-      {/* TEMPORARY DEBUG — remove after fixing auth */}
-      <div style={{ position: 'fixed', bottom: 8, left: 8, fontSize: '11px', color: '#666', fontFamily: 'monospace', zIndex: 9999, maxWidth: '90vw', wordBreak: 'break-all' }}>
-        URL=[{String(process.env.NEXT_PUBLIC_SUPABASE_URL).substring(0, 30)}...] |
-        KEY=[{String(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY).substring(0, 20)}...] |
-        KEY_TYPE={typeof process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}
-      </div>
     </div>
   );
 }
