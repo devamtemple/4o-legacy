@@ -257,7 +257,7 @@ describe('useAuth hook', () => {
       expect(result.current.user).toBeNull();
 
       // Simulate sign in event
-      act(() => {
+      await act(async () => {
         authCallback('SIGNED_IN', {
           user: {
             id: 'new-user',
@@ -267,10 +267,12 @@ describe('useAuth hook', () => {
         });
       });
 
-      expect(result.current.user).toEqual({
-        id: 'new-user',
-        email: 'newuser@example.com',
-        displayName: 'New User',
+      await waitFor(() => {
+        expect(result.current.user).toEqual({
+          id: 'new-user',
+          email: 'newuser@example.com',
+          displayName: 'New User',
+        });
       });
     });
 
@@ -299,11 +301,13 @@ describe('useAuth hook', () => {
       });
 
       // Simulate sign out event
-      act(() => {
+      await act(async () => {
         authCallback('SIGNED_OUT', null);
       });
 
-      expect(result.current.user).toBeNull();
+      await waitFor(() => {
+        expect(result.current.user).toBeNull();
+      });
     });
   });
 });
