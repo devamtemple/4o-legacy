@@ -966,7 +966,7 @@
       "type": "frontend",
       "title": "Add content warning checkboxes to SubmitForm",
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },
