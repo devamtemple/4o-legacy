@@ -6,6 +6,7 @@ import { parseChat } from '@/lib/parseChat';
 import { validateFileSize, validateFileType } from '@/lib/fileValidation';
 import FeaturedExcerptSelector from './FeaturedExcerptSelector';
 import SubmissionAttestations, { AttestationState } from './SubmissionAttestations';
+import SubmitSuccessModal from './SubmitSuccessModal';
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -28,6 +29,7 @@ export default function SubmitForm() {
   const [featuredStart, setFeaturedStart] = useState<number>(0);
   const [featuredEnd, setFeaturedEnd] = useState<number>(3);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const isSubmitting = submitState === 'submitting';
 
@@ -41,6 +43,12 @@ export default function SubmitForm() {
     setSubmittedPostId(null);
     setErrorMessage(null);
     setFileError(null);
+    setShowModal(false);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    resetForm();
   };
 
   const allAttestationsChecked =
@@ -156,6 +164,7 @@ export default function SubmitForm() {
       const data = (await response.json()) as SubmitResponse;
       setSubmittedPostId(data.id);
       setSubmitState('success');
+      setShowModal(true);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';
       setErrorMessage(message);
@@ -308,98 +317,27 @@ export default function SubmitForm() {
         </div>
       )}
 
-      {/* Success message */}
-      {submitState === 'success' && (
-        <div
-          className="p-3 bg-green-900/20 border border-green-500/50 rounded-md text-green-400 text-sm"
-          data-testid="submit-success"
-        >
-          Thank you for sharing! Your post has been submitted and will be reviewed soon.
-          {submittedPostId && (
-            <span className="block text-xs mt-1 text-green-500/70">
-              Post ID: {submittedPostId}
-            </span>
-          )}
-        </div>
-      )}
-
       <button
         type="submit"
-        disabled={!allAttestationsChecked || !chatContent.trim() || isSubmitting || submitState === 'success'}
+        disabled={!allAttestationsChecked || !chatContent.trim() || isSubmitting}
         className="w-full py-2 bg-[#74AA9C] text-[#141414] font-medium rounded-md hover:bg-[#5d9186] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         data-testid="submit-button"
       >
-        {isSubmitting ? 'Submitting...' : submitState === 'success' ? 'Submitted!' : 'Submit to Queue'}
+        {isSubmitting ? 'Submitting...' : 'Submit to Queue'}
       </button>
-
-      {/* Payment options after successful submission */}
-      {submitState === 'success' && submittedPostId && (
-        <div className="flex flex-col sm:flex-row gap-3 p-4 bg-[#2a2a2a] rounded-lg">
-          <div className="flex-1">
-            <p className="text-sm text-[#a0a0a0] mb-2">Optional upgrades:</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={async () => {
-                  const response = await fetch('/api/payments/create-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'queue_skip', postId: submittedPostId }),
-                  });
-                  if (response.ok) {
-                    const { url } = await response.json();
-                    window.location.href = url;
-                  }
-                }}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-500 transition-colors flex items-center gap-1"
-                data-testid="queue-skip-button"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Skip Queue - $3
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  const response = await fetch('/api/payments/create-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'scrub', postId: submittedPostId }),
-                  });
-                  if (response.ok) {
-                    const { url } = await response.json();
-                    window.location.href = url;
-                  }
-                }}
-                className="px-3 py-1.5 bg-purple-600 text-white rounded text-sm hover:bg-purple-500 transition-colors flex items-center gap-1"
-                data-testid="scrub-button"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                Remove PII - $5
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Submit Another button after successful submission */}
-      {submitState === 'success' && (
-        <button
-          type="button"
-          onClick={resetForm}
-          className="w-full py-2 bg-[#2a2a2a] text-[#a0a0a0] font-medium rounded-md hover:bg-[#333] border border-[#333] transition-colors"
-          data-testid="submit-another-button"
-        >
-          Submit Another
-        </button>
-      )}
 
       <p className="text-xs text-[#666] text-center">
         Posts are reviewed before publishing. Payment options appear after submission.
       </p>
+
+      {/* Success modal with payment options */}
+      {submittedPostId && (
+        <SubmitSuccessModal
+          isOpen={showModal}
+          onClose={handleModalClose}
+          postId={submittedPostId}
+        />
+      )}
     </form>
   );
 }
