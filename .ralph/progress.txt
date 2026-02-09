@@ -279,3 +279,5 @@ Mon Feb  9 05:18:23 PST 2026: Retry TASK-013 - Fixed naming convention violation
 [2026-02-09T05:30:04-08:00] COMPLETED TASK-017 
 2026-02-09T05:32:11-08:00: TASK-018 - Created ContentWarningGate component (TDD). Gate shows warning icon, 'Content Warning' heading, warning tags as amber pills (using CONTENT_WARNING_LABELS), 'Show post' button to dismiss, 'Skip' button to hide. Handles other:text format, unknown warnings as-is. PostCard wrapped with ContentWarningGate passing post.contentWarnings. 10/10 tests pass, tsc and build pass.
 [2026-02-09 05:32:22] Session ended
+[2026-02-09T05:32:40-08:00] COMPLETED TASK-018 
+2026-02-09T05:34:53-08:00: TASK-019 - Updated posts feed API to respect privacy and return scrubbed chat. Added .or('is_private.eq.false,is_private.is.null') filter. transformDbPost now swaps chat with scrubbed_chat when available (PII protection). Added dedication, contentWarnings, displayNameOverride to ApiPost and transformToApiPost. Author field uses displayNameOverride when set. Created 9 tests covering privacy filter, scrubbed chat swap, new fields, fallback behavior. tsc, build, and jest all pass.

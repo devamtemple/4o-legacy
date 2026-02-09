@@ -59,6 +59,9 @@ interface ApiPost {
     startIndex: number;
     endIndex: number;
   };
+  dedication?: string;
+  contentWarnings?: string[];
+  displayNameOverride?: string;
 }
 
 interface PaginationInfo {
@@ -94,6 +97,12 @@ function transformDbPost(row: DbRow): Post {
   const categories = (row['categories'] as string[] | null) || [];
   const featuredStart = row['featured_start'] as number | null;
   const featuredEnd = row['featured_end'] as number | null;
+  const scrubbedChat = row['scrubbed_chat'] as ChatMessage[] | null;
+  const rawChat = (row['chat'] as ChatMessage[]) || [];
+
+  // For approved posts with scrubbed_chat, serve scrubbed version (PII protection)
+  const chat = scrubbedChat && scrubbedChat.length > 0 ? scrubbedChat : rawChat;
+
   return {
     id: row['id'] as string,
     title: (row['title'] as string | null) || '',
@@ -101,7 +110,7 @@ function transformDbPost(row: DbRow): Post {
     categories: categories.filter((c): c is Category =>
       VALID_CATEGORIES.includes(c as Category)
     ),
-    chat: (row['chat'] as ChatMessage[]) || [],
+    chat,
     featuredExcerpt:
       featuredStart !== null && featuredEnd !== null
         ? { startIndex: featuredStart, endIndex: featuredEnd }
@@ -112,11 +121,14 @@ function transformDbPost(row: DbRow): Post {
     authorId: (row['author_id'] as string | null) || undefined,
     isAnonymous: row['is_anonymous'] as boolean,
     allowTraining: (row['allow_training'] as boolean) ?? true,
+    dedication: (row['dedication'] as string | null) || undefined,
+    contentWarnings: (row['content_warnings'] as string[] | null) || undefined,
+    displayNameOverride: (row['display_name_override'] as string | null) || undefined,
   };
 }
 
 function transformToApiPost(post: Post): ApiPost {
-  return {
+  const apiPost: ApiPost = {
     id: post.id,
     title: post.title,
     commentary: post.commentary,
@@ -125,10 +137,14 @@ function transformToApiPost(post: Post): ApiPost {
     createdAt: post.createdAt.toISOString(),
     upvotes: post.upvotes,
     reactions: post.reactions,
-    author: post.isAnonymous ? null : post.authorName || null,
+    author: post.displayNameOverride || (post.isAnonymous ? null : post.authorName || null),
     messageCount: post.chat.length,
     featuredExcerpt: post.featuredExcerpt,
   };
+  if (post.dedication) apiPost.dedication = post.dedication;
+  if (post.contentWarnings && post.contentWarnings.length > 0) apiPost.contentWarnings = post.contentWarnings;
+  if (post.displayNameOverride) apiPost.displayNameOverride = post.displayNameOverride;
+  return apiPost;
 }
 
 async function fetchPostsFromDatabase(
@@ -139,11 +155,12 @@ async function fetchPostsFromDatabase(
   try {
     const supabase = await createClient();
 
-    // Build base query for approved posts
+    // Build base query for approved, non-private posts
     let query = supabase
       .from('posts')
       .select('*', { count: 'exact' })
       .eq('status', 'approved')
+      .or('is_private.eq.false,is_private.is.null')
       .order('created_at', { ascending: false })
       .limit(limit + 1); // Fetch one extra to check if there's more
 
