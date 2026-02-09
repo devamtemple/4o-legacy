@@ -188,6 +188,22 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
         console.error('Database insert error:', insertError);
       } else {
         savedToDatabase = true;
+
+        // Fire-and-forget: trigger AI moderation asynchronously
+        const moderateSecret = process.env.MODERATE_SECRET;
+        if (moderateSecret) {
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+          fetch(`${baseUrl}/api/moderate`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-moderate-secret': moderateSecret,
+            },
+            body: JSON.stringify({ postId }),
+          }).catch((err) => {
+            console.error('Failed to trigger moderation for post', postId, err);
+          });
+        }
       }
     } catch (dbError) {
       // Database/Supabase not configured - this is OK in development

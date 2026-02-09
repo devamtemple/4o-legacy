@@ -684,7 +684,7 @@
       "type": "backend",
       "title": "Build moderation API route and integrate with submit flow",
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "runtime": "Node.js",
         "language": "TypeScript",
