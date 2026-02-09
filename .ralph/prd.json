@@ -1248,7 +1248,7 @@
       "type": "frontend",
       "title": "Display dedication and content warnings on PostCard",
       "priority": 20,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },

@@ -284,3 +284,4 @@ Mon Feb  9 05:18:23 PST 2026: Retry TASK-013 - Fixed naming convention violation
 [2026-02-09 05:35:04] Session ended
 [2026-02-09T05:35:16-08:00] COMPLETED TASK-019 
 2026-02-09T05:36:12-08:00: TASK-020 - Added dedication display to PostCard. Shows below title, above author/date metadata, in italic text-[#a0a0a0] text-sm. Only renders when post.dedication is present. ContentWarningGate wrapping and displayNameOverride were already done in TASK-018/TASK-017. tsc and build pass.
+[2026-02-09 05:36:23] Session ended
