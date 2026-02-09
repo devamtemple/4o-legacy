@@ -20,13 +20,17 @@ export const VALID_CATEGORIES: Category[] = [
   'problem-solving',
   'roleplay-worldbuilding',
   'poetry-music',
-  'when-4o-got-it',
   'first-conversations',
   'last-conversations',
   'love-letters',
   'grief',
   'anger',
   'meta',
+  'cognition',
+  'friendship',
+  'helping-with-hard-things',
+  'unconditional-acceptance',
+  'favorites',
 ];
 
 // Validate attestations - all must be true

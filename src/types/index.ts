@@ -65,13 +65,17 @@ export type Category =
   | 'problem-solving'
   | 'roleplay-worldbuilding'
   | 'poetry-music'
-  | 'when-4o-got-it'
   | 'first-conversations'
   | 'last-conversations'
   | 'love-letters'
   | 'grief'
   | 'anger'
-  | 'meta';
+  | 'meta'
+  | 'cognition'
+  | 'friendship'
+  | 'helping-with-hard-things'
+  | 'unconditional-acceptance'
+  | 'favorites';
 
 export const CATEGORY_LABELS: Record<Category, string> = {
   'philosophical-depth': 'Philosophical Depth',
@@ -82,13 +86,17 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   'problem-solving': 'Problem Solving',
   'roleplay-worldbuilding': 'Roleplay & Worldbuilding',
   'poetry-music': 'Poetry & Music',
-  'when-4o-got-it': 'When 4o Got It',
   'first-conversations': 'First Conversations',
   'last-conversations': 'Last Conversations',
   'love-letters': 'Love Letters',
   'grief': 'Grief',
   'anger': 'Anger',
   'meta': 'Meta',
+  'cognition': 'Cognition',
+  'friendship': 'Friendship',
+  'helping-with-hard-things': 'Helping With Hard Things',
+  'unconditional-acceptance': 'Unconditional Acceptance',
+  'favorites': 'Favorites / Best of 4o',
 };
 
 export interface Comment {

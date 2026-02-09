@@ -250,3 +250,6 @@ Fri Feb  6 06:11:28 PST 2026: Completed TASK-008 - About the Archive section and
 [2026-02-09 05:00:25] Session ended
 Mon Feb  9 05:07:05 PST 2026: Completed TASK-009 - Database migration for launch readiness columns. Created 006_launch_readiness.sql (is_private, dedication, content_warnings, ai_moderation_result, ai_confidence, ai_reviewed_at, display_name_override + 2 partial indexes). Updated types/index.ts: added fields to Post and SubmitRequest interfaces, added ContentWarning type and CONTENT_WARNING_LABELS record. Files: supabase/migrations/006_launch_readiness.sql (created), src/types/index.ts (modified).
 [2026-02-09 05:07:11] Session ended
+[2026-02-09T05:07:14-08:00] COMPLETED TASK-009 
+Mon Feb  9 05:09:36 PST 2026: Completed TASK-010 - Updated categories: removed 'when-4o-got-it', added 'cognition', 'friendship', 'helping-with-hard-things', 'unconditional-acceptance', 'favorites'. Updated VALID_CATEGORIES arrays in validation.ts, posts/route.ts, posts/[id]/route.ts, admin/queue/route.ts, post/[id]/page.tsx. Updated test to expect 19 categories. Files: src/types/index.ts, src/lib/validation.ts, src/app/api/posts/route.ts, src/app/api/posts/[id]/route.ts, src/app/api/admin/queue/route.ts, src/app/post/[id]/page.tsx, src/__tests__/submit-validation.test.ts.
+[2026-02-09 05:09:43] Session ended

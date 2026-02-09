@@ -151,7 +151,7 @@ describe('validateCategories', () => {
   it('accepts all valid category values', () => {
     const result = validateCategories([...VALID_CATEGORIES]);
     expect(result).toEqual(VALID_CATEGORIES);
-    expect(result).toHaveLength(15);
+    expect(result).toHaveLength(19);
   });
 });
 

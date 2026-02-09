@@ -544,7 +544,7 @@
       "type": "frontend",
       "title": "Update categories — add new, remove 'When 4o Got It'",
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },
