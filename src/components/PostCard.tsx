@@ -224,6 +224,11 @@ export default function PostCard({ post, initialHasUpvoted = false }: PostCardPr
                 </Link>
               </h3>
             )}
+            {post.dedication && (
+              <p className="text-sm text-[#a0a0a0] italic mb-1" data-testid="post-dedication">
+                {post.dedication}
+              </p>
+            )}
             <div className="flex items-center gap-2 text-sm text-[#666]">
               <span>{post.displayNameOverride || (post.isAnonymous ? 'Anonymous' : post.authorName) || 'Anonymous'}</span>
               <span>•</span>
