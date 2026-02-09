@@ -139,6 +139,14 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
     // Default allow_training to true if not specified
     const allowTraining = body.allowTraining !== false;
 
+    // Sanitize dedication (optional, max 200 chars)
+    const dedication = body.dedication
+      ? sanitizeContent(body.dedication.trim()).slice(0, 200)
+      : null;
+
+    // Default isPrivate to false if not specified
+    const isPrivate = body.isPrivate === true;
+
     // Generate a unique ID for the post
     const postId = crypto.randomUUID();
 
@@ -174,6 +182,8 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
         featured_start: featuredStart,
         featured_end: featuredEnd,
         allow_training: allowTraining,
+        dedication,
+        is_private: isPrivate,
         attestation_data: {
           has_right_to_share: attestations.hasRightToShare,
           agrees_to_terms: attestations.agreesToTerms,

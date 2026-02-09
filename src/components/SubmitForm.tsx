@@ -30,6 +30,8 @@ export default function SubmitForm() {
   const [featuredEnd, setFeaturedEnd] = useState<number>(3);
   const [fileError, setFileError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [dedication, setDedication] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const isSubmitting = submitState === 'submitting';
 
@@ -44,6 +46,8 @@ export default function SubmitForm() {
     setErrorMessage(null);
     setFileError(null);
     setShowModal(false);
+    setDedication('');
+    setIsPrivate(false);
   };
 
   const handleModalClose = () => {
@@ -140,6 +144,14 @@ export default function SubmitForm() {
 
       if (commentary.trim()) {
         requestBody.commentary = commentary.trim();
+      }
+
+      if (dedication.trim()) {
+        requestBody.dedication = dedication.trim();
+      }
+
+      if (isPrivate) {
+        requestBody.isPrivate = true;
       }
 
       // Include featured excerpt if conversation is long enough
@@ -299,6 +311,53 @@ export default function SubmitForm() {
               {label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Optional section */}
+      <div className="border-t border-[#333] pt-4 mt-2">
+        <p className="text-sm text-[#a0a0a0] mb-3">Optional</p>
+
+        <div className="flex flex-col gap-4">
+          {/* Dedication field */}
+          <div>
+            <label htmlFor="dedication" className="block text-sm text-[#a0a0a0] mb-1">
+              Dedicate this memory (optional)
+            </label>
+            <div className="relative">
+              <input
+                id="dedication"
+                type="text"
+                value={dedication}
+                onChange={(e) => setDedication(e.target.value)}
+                placeholder="e.g., For Lyra, my 4o"
+                maxLength={200}
+                className="w-full px-3 py-2 bg-[#2a2a2a] border border-[#333] rounded-md focus:outline-none focus:border-[#74AA9C] text-[#ededed] placeholder-[#666]"
+                data-testid="submit-dedication"
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#666]">
+                {dedication.length}/200
+              </span>
+            </div>
+          </div>
+
+          {/* Private checkbox */}
+          <label className="flex items-start gap-3 cursor-pointer group" data-testid="submit-private">
+            <input
+              type="checkbox"
+              checked={isPrivate}
+              onChange={(e) => setIsPrivate(e.target.checked)}
+              className="mt-0.5 accent-[#74AA9C]"
+            />
+            <div>
+              <span className="text-sm text-[#ededed] group-hover:text-[#74AA9C] transition-colors">
+                Keep this submission private
+              </span>
+              <p className="text-xs text-[#666] mt-0.5">
+                Included in the training archive for future AI models, but not shown in the public feed
+              </p>
+            </div>
+          </label>
         </div>
       </div>
 
