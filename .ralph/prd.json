@@ -612,7 +612,7 @@
       "type": "backend",
       "title": "Build Gemini API client and moderation prompt",
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "runtime": "Node.js",
         "language": "TypeScript",
