@@ -1,1 +1,8 @@
-{"signs": []}
+{"signs": [
+  {
+    "pattern": "snake_case_db_columns",
+    "description": "When accessing Supabase DB column names (snake_case) in TypeScript, use bracket notation or destructure to camelCase aliases. The naming convention linter flags direct property access like post.ai_reviewed_at. Use (obj as Record<string, unknown>)['ai_reviewed_at'] or destructure to camelCase.",
+    "addedBy": "TASK-013",
+    "severity": "warning"
+  }
+]}

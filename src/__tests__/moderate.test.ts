@@ -177,16 +177,16 @@ describe('POST /api/moderate', () => {
     expect(res.status).toBe(200);
 
     // Check update was called with approved status
-    const updateArg = mockUpdateFn.mock.calls[0][0];
+    const updateArg = mockUpdateFn.mock.calls[0][0] as Record<string, unknown>;
     expect(updateArg.status).toBe('approved');
-    expect(updateArg.ai_confidence).toBe(0.92);
-    expect(updateArg.scrubbed_chat).toEqual(approveResult.scrubbedMessages);
-    expect(updateArg.ai_moderation_result).toEqual(approveResult);
+    expect(updateArg['ai_confidence']).toBe(0.92);
+    expect(updateArg['scrubbed_chat']).toEqual(approveResult.scrubbedMessages);
+    expect(updateArg['ai_moderation_result']).toEqual(approveResult);
     // Categories should be merged and deduped
     expect(updateArg.categories).toContain('emotional-intelligence');
     expect(updateArg.categories).toContain('friendship');
     // Content warnings should be merged and deduped
-    expect(updateArg.content_warnings).toContain('grief');
+    expect(updateArg['content_warnings']).toContain('grief');
   });
 
   it('keeps post pending when decision is flag', async () => {

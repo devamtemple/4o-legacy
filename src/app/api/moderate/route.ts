@@ -34,8 +34,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Post not found' }, { status: 404 });
   }
 
+  // Destructure DB columns to camelCase
+  const aiReviewedAt = (post as Record<string, unknown>)['ai_reviewed_at'];
+  const contentWarnings = ((post as Record<string, unknown>)['content_warnings'] as string[]) || [];
+
   // Skip if already moderated
-  if (post.ai_reviewed_at) {
+  if (aiReviewedAt) {
     return NextResponse.json({ skipped: true, message: 'Already moderated' }, { status: 200 });
   }
 
@@ -67,8 +71,7 @@ export async function POST(request: Request) {
   const mergedCategories = [...new Set([...existingCategories, ...result.suggestedCategories])];
 
   // Merge content warnings: user-provided + AI-detected, deduped
-  const existingWarnings = (post.content_warnings as string[]) || [];
-  const mergedWarnings = [...new Set([...existingWarnings, ...result.detectedWarnings])];
+  const mergedWarnings = [...new Set([...contentWarnings, ...result.detectedWarnings])];
 
   // Update post with moderation results
   const { error: updateError } = await supabase

@@ -31,6 +31,18 @@ export default function SubmitForm() {
 
   const isSubmitting = submitState === 'submitting';
 
+  const resetForm = () => {
+    setTitle('');
+    setCommentary('');
+    setChatContent('');
+    setSelectedCategories([]);
+    setAttestations(initialAttestations);
+    setSubmitState('idle');
+    setSubmittedPostId(null);
+    setErrorMessage(null);
+    setFileError(null);
+  };
+
   const allAttestationsChecked =
     attestations.hasRightToShare &&
     attestations.agreesToTerms;
@@ -144,17 +156,6 @@ export default function SubmitForm() {
       const data = (await response.json()) as SubmitResponse;
       setSubmittedPostId(data.id);
       setSubmitState('success');
-
-      // Reset form after short delay to show success
-      setTimeout(() => {
-        setTitle('');
-        setCommentary('');
-        setChatContent('');
-        setSelectedCategories([]);
-        setAttestations(initialAttestations);
-        setSubmitState('idle');
-        setSubmittedPostId(null);
-      }, 3000);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';
       setErrorMessage(message);
@@ -382,6 +383,18 @@ export default function SubmitForm() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Submit Another button after successful submission */}
+      {submitState === 'success' && (
+        <button
+          type="button"
+          onClick={resetForm}
+          className="w-full py-2 bg-[#2a2a2a] text-[#a0a0a0] font-medium rounded-md hover:bg-[#333] border border-[#333] transition-colors"
+          data-testid="submit-another-button"
+        >
+          Submit Another
+        </button>
       )}
 
       <p className="text-xs text-[#666] text-center">
