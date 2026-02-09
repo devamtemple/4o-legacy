@@ -898,7 +898,7 @@
       "type": "frontend",
       "title": "Add dedication field and private checkbox to SubmitForm",
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "techStack": {
         "frontend": "Next.js 16, React 19, TypeScript, Tailwind CSS 4"
       },
