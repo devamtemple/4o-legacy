@@ -223,7 +223,7 @@ export default function PostCard({ post, initialHasUpvoted = false }: PostCardPr
               </h3>
             )}
             <div className="flex items-center gap-2 text-sm text-[#666]">
-              <span>{post.isAnonymous ? 'Anonymous' : post.authorName}</span>
+              <span>{post.displayNameOverride || (post.isAnonymous ? 'Anonymous' : post.authorName) || 'Anonymous'}</span>
               <span>•</span>
               <span>{formatDate(post.createdAt)}</span>
               <span>•</span>

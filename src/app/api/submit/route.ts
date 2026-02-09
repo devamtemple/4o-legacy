@@ -162,6 +162,11 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
       }
     }
 
+    // Sanitize displayNameOverride (optional, max 50 chars)
+    const displayNameOverride = body.displayNameOverride
+      ? sanitizeContent(body.displayNameOverride.trim()).slice(0, 50)
+      : null;
+
     // Generate a unique ID for the post
     const postId = crypto.randomUUID();
 
@@ -200,6 +205,7 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
         dedication,
         is_private: isPrivate,
         content_warnings: contentWarnings.length > 0 ? contentWarnings : [],
+        display_name_override: displayNameOverride,
         attestation_data: {
           has_right_to_share: attestations.hasRightToShare,
           agrees_to_terms: attestations.agreesToTerms,

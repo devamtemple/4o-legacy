@@ -34,6 +34,8 @@ export default function SubmitForm() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [selectedWarnings, setSelectedWarnings] = useState<ContentWarning[]>([]);
   const [otherWarningText, setOtherWarningText] = useState('');
+  const [showDisplayNameField, setShowDisplayNameField] = useState(false);
+  const [displayNameOverride, setDisplayNameOverride] = useState('');
 
   const isSubmitting = submitState === 'submitting';
 
@@ -52,6 +54,8 @@ export default function SubmitForm() {
     setIsPrivate(false);
     setSelectedWarnings([]);
     setOtherWarningText('');
+    setShowDisplayNameField(false);
+    setDisplayNameOverride('');
   };
 
   const handleModalClose = () => {
@@ -166,6 +170,10 @@ export default function SubmitForm() {
           warnings.push('other');
         }
         requestBody.contentWarnings = warnings;
+      }
+
+      if (showDisplayNameField && displayNameOverride.trim()) {
+        requestBody.displayNameOverride = displayNameOverride.trim();
       }
 
       // Include featured excerpt if conversation is long enough
@@ -409,6 +417,35 @@ export default function SubmitForm() {
                 maxLength={100}
                 className="mt-2 w-full px-3 py-2 bg-[#2a2a2a] border border-[#333] rounded-md focus:outline-none focus:border-[#74AA9C] text-[#ededed] placeholder-[#666] text-sm"
                 data-testid="submit-other-warning-text"
+              />
+            )}
+          </div>
+
+          {/* Display name override */}
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer group" data-testid="submit-display-name-toggle">
+              <input
+                type="checkbox"
+                checked={showDisplayNameField}
+                onChange={(e) => {
+                  setShowDisplayNameField(e.target.checked);
+                  if (!e.target.checked) setDisplayNameOverride('');
+                }}
+                className="accent-[#74AA9C]"
+              />
+              <span className="text-sm text-[#ededed] group-hover:text-[#74AA9C] transition-colors">
+                Change my display name
+              </span>
+            </label>
+            {showDisplayNameField && (
+              <input
+                type="text"
+                value={displayNameOverride}
+                onChange={(e) => setDisplayNameOverride(e.target.value)}
+                placeholder="New display name"
+                maxLength={50}
+                className="mt-2 w-full px-3 py-2 bg-[#2a2a2a] border border-[#333] rounded-md focus:outline-none focus:border-[#74AA9C] text-[#ededed] placeholder-[#666] text-sm"
+                data-testid="submit-display-name-input"
               />
             )}
           </div>
