@@ -46,14 +46,18 @@ async function fetchUserWithRole(
   const authUser = transformUser(session?.user ?? null);
   if (!authUser) return null;
 
-  const { data } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', authUser.id)
-    .single();
+  try {
+    const { data } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', authUser.id)
+      .single();
 
-  if (data?.role) {
-    authUser.role = data.role;
+    if (data?.role) {
+      authUser.role = data.role;
+    }
+  } catch {
+    // Profiles query failed — continue without role
   }
 
   return authUser;
@@ -76,12 +80,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setUser(await fetchUserWithRole(supabase, session));
-      setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(await fetchUserWithRole(supabase, session));
+      } catch {
+        // Auth failed — continue as logged out
+      } finally {
+        setLoading(false);
+      }
+    })();
 
     // Listen for auth state changes
     const {
