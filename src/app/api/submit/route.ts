@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { parseChat } from '@/lib/parseChat';
 import { sanitizeContent, validateAttestations, validateCategories } from '@/lib/validation';
 import { validateContentLength } from '@/lib/fileValidation';
-import { SubmitRequest, SubmitResponse, ApiError } from '@/types';
+import { SubmitRequest, SubmitResponse, ApiError, CONTENT_WARNING_LABELS } from '@/types';
 
 // Rate limiting map (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -147,6 +147,21 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
     // Default isPrivate to false if not specified
     const isPrivate = body.isPrivate === true;
 
+    // Validate and sanitize content warnings
+    const validWarningKeys = Object.keys(CONTENT_WARNING_LABELS);
+    const contentWarnings: string[] = [];
+    if (Array.isArray(body.contentWarnings)) {
+      for (const warning of body.contentWarnings) {
+        if (typeof warning !== 'string') continue;
+        // Handle "other:custom text" format
+        if (warning.startsWith('other:')) {
+          contentWarnings.push(`other:${sanitizeContent(warning.slice(6).trim()).slice(0, 100)}`);
+        } else if (validWarningKeys.includes(warning)) {
+          contentWarnings.push(warning);
+        }
+      }
+    }
+
     // Generate a unique ID for the post
     const postId = crypto.randomUUID();
 
@@ -184,6 +199,7 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
         allow_training: allowTraining,
         dedication,
         is_private: isPrivate,
+        content_warnings: contentWarnings.length > 0 ? contentWarnings : [],
         attestation_data: {
           has_right_to_share: attestations.hasRightToShare,
           agrees_to_terms: attestations.agreesToTerms,

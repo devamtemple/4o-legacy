@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Category, CATEGORY_LABELS, SubmitRequest, SubmitResponse, ApiError, ChatMessage } from '@/types';
+import { Category, CATEGORY_LABELS, ContentWarning, CONTENT_WARNING_LABELS, SubmitRequest, SubmitResponse, ApiError, ChatMessage } from '@/types';
 import { parseChat } from '@/lib/parseChat';
 import { validateFileSize, validateFileType } from '@/lib/fileValidation';
 import FeaturedExcerptSelector from './FeaturedExcerptSelector';
@@ -32,6 +32,8 @@ export default function SubmitForm() {
   const [showModal, setShowModal] = useState(false);
   const [dedication, setDedication] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
+  const [selectedWarnings, setSelectedWarnings] = useState<ContentWarning[]>([]);
+  const [otherWarningText, setOtherWarningText] = useState('');
 
   const isSubmitting = submitState === 'submitting';
 
@@ -48,6 +50,8 @@ export default function SubmitForm() {
     setShowModal(false);
     setDedication('');
     setIsPrivate(false);
+    setSelectedWarnings([]);
+    setOtherWarningText('');
   };
 
   const handleModalClose = () => {
@@ -152,6 +156,16 @@ export default function SubmitForm() {
 
       if (isPrivate) {
         requestBody.isPrivate = true;
+      }
+
+      if (selectedWarnings.length > 0) {
+        const warnings: string[] = selectedWarnings.filter(w => w !== 'other');
+        if (selectedWarnings.includes('other') && otherWarningText.trim()) {
+          warnings.push(`other:${otherWarningText.trim()}`);
+        } else if (selectedWarnings.includes('other')) {
+          warnings.push('other');
+        }
+        requestBody.contentWarnings = warnings;
       }
 
       // Include featured excerpt if conversation is long enough
@@ -358,6 +372,46 @@ export default function SubmitForm() {
               </p>
             </div>
           </label>
+
+          {/* Content warnings */}
+          <div>
+            <label className="block text-sm text-[#a0a0a0] mb-2">
+              Content warnings (optional)
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" data-testid="submit-content-warnings">
+              {(Object.entries(CONTENT_WARNING_LABELS) as [ContentWarning, string][]).map(([key, label]) => (
+                <label key={key} className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={selectedWarnings.includes(key)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedWarnings(prev => [...prev, key]);
+                      } else {
+                        setSelectedWarnings(prev => prev.filter(w => w !== key));
+                        if (key === 'other') setOtherWarningText('');
+                      }
+                    }}
+                    className="accent-[#74AA9C]"
+                  />
+                  <span className="text-sm text-[#ededed] group-hover:text-[#74AA9C] transition-colors">
+                    {label}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {selectedWarnings.includes('other') && (
+              <input
+                type="text"
+                value={otherWarningText}
+                onChange={(e) => setOtherWarningText(e.target.value)}
+                placeholder="Describe the content warning..."
+                maxLength={100}
+                className="mt-2 w-full px-3 py-2 bg-[#2a2a2a] border border-[#333] rounded-md focus:outline-none focus:border-[#74AA9C] text-[#ededed] placeholder-[#666] text-sm"
+                data-testid="submit-other-warning-text"
+              />
+            )}
+          </div>
         </div>
       </div>
 
