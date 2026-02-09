@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import ChatMessage from './ChatMessage';
 import FlagButton from './FlagButton';
 import FlagModal from './FlagModal';
+import ContentWarningGate from './ContentWarningGate';
 
 interface PostCardProps {
   post: Post;
@@ -206,6 +207,7 @@ export default function PostCard({ post, initialHasUpvoted = false }: PostCardPr
   const canVote = !!user;
 
   return (
+    <ContentWarningGate warnings={post.contentWarnings || []}>
     <article className="bg-[#1e1e1e] border border-[#333] rounded-lg overflow-hidden" data-testid="post-card">
       {/* Header */}
       <div className="p-4 border-b border-[#333]">
@@ -344,5 +346,6 @@ export default function PostCard({ post, initialHasUpvoted = false }: PostCardPr
         onClose={() => setIsFlagModalOpen(false)}
       />
     </article>
+    </ContentWarningGate>
   );
 }
