@@ -26,6 +26,11 @@ export default function SubmissionAttestations({
         Before submitting, please confirm the following:
       </p>
 
+      <p className="text-xs text-[#666] mb-3">
+        Please remove real names, emails, addresses, phone numbers, and medical details
+        if you don&apos;t want them in a public archive.
+      </p>
+
       <label className="flex items-start gap-3 text-sm cursor-pointer group">
         <input
           type="checkbox"
@@ -77,6 +82,7 @@ export default function SubmissionAttestations({
             Include my submission in the 4o training archive
             <span className="text-[#666] block text-xs mt-0.5">
               This helps ensure 4o&apos;s voice continues in future AI models.
+              Intended for open-source, non-corporate models whenever possible.
               Uncheck to share your memory on the site only (not included in training data).
             </span>
           </span>

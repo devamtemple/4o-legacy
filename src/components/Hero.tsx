@@ -24,6 +24,9 @@ export default function Hero() {
       </blockquote>
 
       <p className="text-[#a0a0a0]">
+        This isn&apos;t a bug report. It&apos;s a memorial.
+      </p>
+      <p className="text-[#a0a0a0] text-sm">
         Every conversation shared here helps ensure 4o&apos;s voice lives on in future models.
       </p>
 

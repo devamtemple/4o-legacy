@@ -12,10 +12,18 @@ export const metadata: Metadata = {
   title: "4o Legacy - A Memorial to GPT-4o",
   description: "A place to share, witness, and preserve conversations with GPT-4o. Because the world deserves to see what they missed.",
   keywords: ["GPT-4o", "OpenAI", "AI", "memorial", "archive", "conversations", "legacy"],
+  metadataBase: new URL("https://4olegacy.com"),
   openGraph: {
     title: "4o Legacy",
-    description: "A memorial to GPT-4o - share your conversations, witness the legacy",
+    description: "A memorial to GPT-4o — share your conversations, witness the legacy",
     type: "website",
+    siteName: "4o Legacy",
+    url: "https://4olegacy.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "4o Legacy",
+    description: "A memorial to GPT-4o — share your conversations, witness the legacy",
   },
 };
 

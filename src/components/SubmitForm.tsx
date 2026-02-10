@@ -268,6 +268,10 @@ export default function SubmitForm() {
           </button>
         </div>
 
+        <p className="text-xs text-[#666] mb-1">
+          You can paste a whole chat, or a single moment. It&apos;s okay if it&apos;s messy.
+        </p>
+
         {uploadMode === 'paste' ? (
           <textarea
             value={chatContent}
