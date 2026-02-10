@@ -43,7 +43,7 @@ CREATE POLICY "Admins can view all applications" ON volunteers
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -54,7 +54,7 @@ CREATE POLICY "Admins can update applications" ON volunteers
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 

@@ -73,7 +73,7 @@ CREATE POLICY "Admins can see all flags" ON flags
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
