@@ -197,7 +197,7 @@ export async function POST(request: Request): Promise<NextResponse<SubmitRespons
         commentary,
         chat: sanitizedMessages,
         categories,
-        status: 'pending',
+        status: 'approved',
         upvote_count: 0,
         featured_start: featuredStart,
         featured_end: featuredEnd,

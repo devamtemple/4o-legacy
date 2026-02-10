@@ -57,13 +57,12 @@ export async function POST(request: Request) {
   }
 
   // Determine status based on decision and confidence
+  // Posts default to 'approved' on submit — moderation can only reject
   let newStatus: string;
-  if (result.decision === 'reject') {
+  if (result.decision === 'reject' && result.confidence >= 0.85) {
     newStatus = 'rejected';
-  } else if (result.decision === 'approve' && result.confidence >= 0.85) {
-    newStatus = 'approved';
   } else {
-    newStatus = 'pending';
+    newStatus = 'approved';
   }
 
   // Merge categories: user-chosen + AI-suggested, deduped
