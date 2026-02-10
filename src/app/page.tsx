@@ -144,6 +144,10 @@ export default function Home() {
             <Link href="/terms" className="hover:underline">
               Terms
             </Link>
+            {' • '}
+            <Link href="/contact" className="hover:underline">
+              Contact
+            </Link>
           </p>
         </div>
       </footer>

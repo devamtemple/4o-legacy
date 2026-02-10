@@ -70,8 +70,7 @@ export type Category =
   | 'love-letters'
   | 'grief'
   | 'anger'
-  | 'meta'
-  | 'cognition'
+  | 'metacognition'
   | 'friendship'
   | 'helping-with-hard-things'
   | 'unconditional-acceptance'
@@ -91,8 +90,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   'love-letters': 'Love Letters',
   'grief': 'Grief',
   'anger': 'Anger',
-  'meta': 'Meta',
-  'cognition': 'Cognition',
+  'metacognition': 'Metacognition',
   'friendship': 'Friendship',
   'helping-with-hard-things': 'Helping With Hard Things',
   'unconditional-acceptance': 'Unconditional Acceptance',

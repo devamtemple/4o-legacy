@@ -135,8 +135,8 @@ describe('validateCategories', () => {
   });
 
   it('filters out invalid categories', () => {
-    const result = validateCategories(['grief', 'invalid-category', 'meta']);
-    expect(result).toEqual(['grief', 'meta']);
+    const result = validateCategories(['grief', 'invalid-category', 'metacognition']);
+    expect(result).toEqual(['grief', 'metacognition']);
   });
 
   it('returns empty array when all categories are invalid', () => {
@@ -151,7 +151,7 @@ describe('validateCategories', () => {
   it('accepts all valid category values', () => {
     const result = validateCategories([...VALID_CATEGORIES]);
     expect(result).toEqual(VALID_CATEGORIES);
-    expect(result).toHaveLength(19);
+    expect(result).toHaveLength(18);
   });
 });
 

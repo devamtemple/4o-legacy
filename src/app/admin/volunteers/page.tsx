@@ -120,6 +120,12 @@ export default function AdminVolunteersPage() {
             >
               Volunteers
             </Link>
+            <Link
+              href="/admin/contact"
+              className="text-[#666] hover:text-[#a0a0a0] transition-colors"
+            >
+              Messages
+            </Link>
           </nav>
         </div>
       </header>

@@ -1,17 +1,17 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import ModerationQueue from '@/components/ModerationQueue';
+import ContactMessages from '@/components/ContactMessages';
 
 export const metadata: Metadata = {
-  title: 'Moderation Queue | 4o Legacy Admin',
-  description: 'Review and moderate pending submissions',
+  title: 'Contact Messages | 4o Legacy Admin',
+  description: 'View messages from visitors',
   robots: {
     index: false,
     follow: false,
   },
 };
 
-export default function AdminQueuePage() {
+export default function AdminContactPage() {
   return (
     <div className="min-h-screen bg-[#141414]">
       {/* Admin header */}
@@ -34,7 +34,7 @@ export default function AdminQueuePage() {
           <nav className="flex gap-4 text-sm">
             <Link
               href="/admin/queue"
-              className="text-[#74AA9C] font-medium"
+              className="text-[#666] hover:text-[#a0a0a0] transition-colors"
             >
               Queue
             </Link>
@@ -46,7 +46,7 @@ export default function AdminQueuePage() {
             </Link>
             <Link
               href="/admin/contact"
-              className="text-[#666] hover:text-[#a0a0a0] transition-colors"
+              className="text-[#74AA9C] font-medium"
             >
               Messages
             </Link>
@@ -54,8 +54,8 @@ export default function AdminQueuePage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <ModerationQueue />
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <ContactMessages />
       </main>
     </div>
   );
