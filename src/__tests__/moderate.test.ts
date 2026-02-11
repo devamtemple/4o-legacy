@@ -189,7 +189,7 @@ describe('POST /api/moderate', () => {
     expect(updateArg['content_warnings']).toContain('grief');
   });
 
-  it('keeps post pending when decision is flag', async () => {
+  it('keeps post approved when decision is flag (only reject can change status)', async () => {
     mockModerateSubmission.mockResolvedValue(flagResult);
 
     const mockUpdateFn = jest.fn().mockReturnValue({
@@ -209,15 +209,15 @@ describe('POST /api/moderate', () => {
     expect(res.status).toBe(200);
 
     const updateArg = mockUpdateFn.mock.calls[0][0];
-    expect(updateArg.status).toBe('pending');
+    expect(updateArg.status).toBe('approved');
   });
 
-  it('keeps post pending when confidence < 0.85 even if approved', async () => {
-    const lowConfidenceApprove: ModerationResult = {
-      ...approveResult,
+  it('keeps post approved when reject confidence < 0.85', async () => {
+    const lowConfidenceReject: ModerationResult = {
+      ...rejectResult,
       confidence: 0.80,
     };
-    mockModerateSubmission.mockResolvedValue(lowConfidenceApprove);
+    mockModerateSubmission.mockResolvedValue(lowConfidenceReject);
 
     const mockUpdateFn = jest.fn().mockReturnValue({
       eq: jest.fn().mockResolvedValue({ error: null }),
@@ -236,7 +236,7 @@ describe('POST /api/moderate', () => {
     expect(res.status).toBe(200);
 
     const updateArg = mockUpdateFn.mock.calls[0][0];
-    expect(updateArg.status).toBe('pending');
+    expect(updateArg.status).toBe('approved');
   });
 
   it('rejects post when decision is reject', async () => {
