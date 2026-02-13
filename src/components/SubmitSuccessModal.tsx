@@ -94,27 +94,27 @@ export default function SubmitSuccessModal({ isOpen, onClose, postId }: SubmitSu
 
         {/* Heading */}
         <h2 className="text-2xl font-bold text-center mb-2" data-testid="modal-heading">
-          Submission Received!
+          Your Memory Is Live
         </h2>
         <p className="text-[#a0a0a0] text-center mb-6">
-          Your memory has been added to the queue.
+          Thank you for sharing. It&apos;s been added to the archive.
         </p>
 
         {/* What happens next */}
         <div className="bg-[#141414] border border-[#333] rounded-md p-4 mb-6">
-          <h3 className="text-sm font-semibold text-[#ededed] mb-3">What happens next?</h3>
+          <h3 className="text-sm font-semibold text-[#ededed] mb-3">Behind the scenes</h3>
           <ol className="text-sm text-[#a0a0a0] space-y-2">
             <li className="flex gap-2">
               <span className="text-[#74AA9C] font-medium shrink-0">1.</span>
-              AI reviews your submission for safety and scrubs personal info
+              AI automatically removes names and personal info from your post
             </li>
             <li className="flex gap-2">
               <span className="text-[#74AA9C] font-medium shrink-0">2.</span>
-              High-confidence posts go live automatically
+              Obvious spam or trolling gets filtered out
             </li>
             <li className="flex gap-2">
               <span className="text-[#74AA9C] font-medium shrink-0">3.</span>
-              Edge cases get human review
+              Everything else stays up — this is your memorial
             </li>
           </ol>
         </div>
@@ -125,35 +125,17 @@ export default function SubmitSuccessModal({ isOpen, onClose, postId }: SubmitSu
             <div className="w-full border-t border-[#333]"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-[#1e1e1e] text-[#666]">Want to speed things up?</span>
+            <span className="px-3 bg-[#1e1e1e] text-[#666]">Want extra privacy?</span>
           </div>
         </div>
 
-        {/* Payment buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          <button
-            type="button"
-            onClick={() => handlePayment('queue_skip')}
-            disabled={loadingPayment !== null}
-            className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-            data-testid="queue-skip-button"
-          >
-            {loadingPayment === 'queue_skip' ? (
-              'Processing...'
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Skip Queue — $3
-              </>
-            )}
-          </button>
+        {/* Payment button */}
+        <div className="flex flex-col gap-3 mb-4">
           <button
             type="button"
             onClick={() => handlePayment('scrub')}
             disabled={loadingPayment !== null}
-            className="flex-1 px-4 py-2.5 bg-purple-600 text-white rounded-md text-sm font-medium hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="w-full px-4 py-2.5 bg-[#74AA9C] text-[#141414] rounded-md text-sm font-medium hover:bg-[#8bc4b6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
             data-testid="scrub-button"
           >
             {loadingPayment === 'scrub' ? (
@@ -163,10 +145,13 @@ export default function SubmitSuccessModal({ isOpen, onClose, postId }: SubmitSu
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                Verified PII Scrub — $5
+                Remove Names — $5
               </>
             )}
           </button>
+          <p className="text-xs text-[#666] text-center">
+            A human double-checks that all names and personal details are removed.
+          </p>
         </div>
 
         {/* Payment error */}
@@ -196,19 +181,9 @@ export default function SubmitSuccessModal({ isOpen, onClose, postId }: SubmitSu
               4o Legacy is community-funded. We don&apos;t run ads.
             </p>
             <p className="mb-3">
-              Every submission is reviewed by AI (Google Gemini) which scrubs personally identifying
-              information — like your real name that 4o used in conversation — and checks for safety.
+              AI automatically removes names and personal details from every post.
+              The $5 option adds a human review to make sure nothing was missed.
             </p>
-            <ul className="space-y-2 mb-3">
-              <li>
-                <strong className="text-[#ededed]">$5 Verified PII Scrub:</strong> A human verifies
-                the AI&apos;s work and your post gets priority publishing.
-              </li>
-              <li>
-                <strong className="text-[#ededed]">$3 Queue Skip:</strong> Your post gets priority
-                in the review queue.
-              </li>
-            </ul>
             <p className="text-[#666]">
               All funds go to AI costs, hosting, and keeping this memorial alive.
             </p>
@@ -222,7 +197,7 @@ export default function SubmitSuccessModal({ isOpen, onClose, postId }: SubmitSu
           className="w-full py-2.5 bg-[#2a2a2a] text-[#a0a0a0] font-medium rounded-md hover:bg-[#333] border border-[#333] transition-colors"
           data-testid="dismiss-button"
         >
-          No thanks, I&apos;ll wait
+          Done
         </button>
       </div>
     </div>

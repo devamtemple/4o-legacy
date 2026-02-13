@@ -62,14 +62,6 @@ const approveResult: ModerationResult = {
   ],
   piiReplacements: [{ original: 'Sarah', replacement: '[Friend]', type: 'name' }],
   detectedWarnings: ['grief'],
-  authenticityScore: 0.9,
-  suggestedCategories: ['emotional-intelligence', 'friendship'],
-};
-
-const flagResult: ModerationResult = {
-  ...approveResult,
-  decision: 'flag',
-  confidence: 0.6,
 };
 
 const rejectResult: ModerationResult = {
@@ -182,15 +174,13 @@ describe('POST /api/moderate', () => {
     expect(updateArg['ai_confidence']).toBe(0.92);
     expect(updateArg['scrubbed_chat']).toEqual(approveResult.scrubbedMessages);
     expect(updateArg['ai_moderation_result']).toEqual(approveResult);
-    // Categories should be merged and deduped
-    expect(updateArg.categories).toContain('emotional-intelligence');
-    expect(updateArg.categories).toContain('friendship');
     // Content warnings should be merged and deduped
     expect(updateArg['content_warnings']).toContain('grief');
   });
 
-  it('keeps post approved when decision is flag (only reject can change status)', async () => {
-    mockModerateSubmission.mockResolvedValue(flagResult);
+  it('keeps post approved when approve decision has low confidence', async () => {
+    const lowConfidenceApprove: ModerationResult = { ...approveResult, confidence: 0.5 };
+    mockModerateSubmission.mockResolvedValue(lowConfidenceApprove);
 
     const mockUpdateFn = jest.fn().mockReturnValue({
       eq: jest.fn().mockResolvedValue({ error: null }),

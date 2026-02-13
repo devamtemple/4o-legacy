@@ -65,10 +65,6 @@ export async function POST(request: Request) {
     newStatus = 'approved';
   }
 
-  // Merge categories: user-chosen + AI-suggested, deduped
-  const existingCategories = (post.categories as string[]) || [];
-  const mergedCategories = [...new Set([...existingCategories, ...result.suggestedCategories])];
-
   // Merge content warnings: user-provided + AI-detected, deduped
   const mergedWarnings = [...new Set([...contentWarnings, ...result.detectedWarnings])];
 
@@ -82,7 +78,6 @@ export async function POST(request: Request) {
       ai_confidence: result.confidence,
       ai_reviewed_at: new Date().toISOString(),
       content_warnings: mergedWarnings,
-      categories: mergedCategories,
     })
     .eq('id', body.postId);
 

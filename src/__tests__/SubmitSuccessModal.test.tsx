@@ -33,28 +33,27 @@ describe('SubmitSuccessModal', () => {
 
   it('renders the modal with heading when open', () => {
     render(<SubmitSuccessModal {...defaultProps} />);
-    expect(screen.getByTestId('modal-heading')).toHaveTextContent('Submission Received!');
-    expect(screen.getByText('Your memory has been added to the queue.')).toBeInTheDocument();
+    expect(screen.getByTestId('modal-heading')).toHaveTextContent('Your Memory Is Live');
+    expect(screen.getByText(/Thank you for sharing/)).toBeInTheDocument();
   });
 
-  it('shows "What happens next?" section', () => {
+  it('shows "Behind the scenes" section', () => {
     render(<SubmitSuccessModal {...defaultProps} />);
-    expect(screen.getByText('What happens next?')).toBeInTheDocument();
-    expect(screen.getByText(/AI reviews your submission/)).toBeInTheDocument();
-    expect(screen.getByText(/High-confidence posts go live/)).toBeInTheDocument();
-    expect(screen.getByText(/Edge cases get human review/)).toBeInTheDocument();
+    expect(screen.getByText('Behind the scenes')).toBeInTheDocument();
+    expect(screen.getByText(/removes names and personal info/)).toBeInTheDocument();
+    expect(screen.getByText(/spam or trolling gets filtered/)).toBeInTheDocument();
   });
 
-  it('shows payment buttons', () => {
+  it('shows Remove Names payment button', () => {
     render(<SubmitSuccessModal {...defaultProps} />);
-    expect(screen.getByTestId('queue-skip-button')).toBeInTheDocument();
     expect(screen.getByTestId('scrub-button')).toBeInTheDocument();
+    expect(screen.getByText(/Remove Names/)).toBeInTheDocument();
   });
 
   it('shows dismiss button', () => {
     render(<SubmitSuccessModal {...defaultProps} />);
     const dismissButton = screen.getByTestId('dismiss-button');
-    expect(dismissButton).toHaveTextContent("No thanks, I'll wait");
+    expect(dismissButton).toHaveTextContent('Done');
   });
 
   it('calls onClose when dismiss button is clicked', () => {
@@ -97,20 +96,20 @@ describe('SubmitSuccessModal', () => {
     expect(screen.queryByTestId('info-section')).not.toBeInTheDocument();
   });
 
-  it('calls fetch with queue_skip when skip queue button is clicked', async () => {
+  it('calls fetch with scrub when Remove Names button is clicked', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ url: 'https://stripe.com/checkout' }),
     });
 
     render(<SubmitSuccessModal {...defaultProps} />);
-    fireEvent.click(screen.getByTestId('queue-skip-button'));
+    fireEvent.click(screen.getByTestId('scrub-button'));
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith('/api/payments/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'queue_skip', postId: 'test-post-123' }),
+        body: JSON.stringify({ type: 'scrub', postId: 'test-post-123' }),
       });
     });
   });
@@ -122,7 +121,7 @@ describe('SubmitSuccessModal', () => {
     });
 
     render(<SubmitSuccessModal {...defaultProps} />);
-    fireEvent.click(screen.getByTestId('queue-skip-button'));
+    fireEvent.click(screen.getByTestId('scrub-button'));
 
     await waitFor(() => {
       expect(screen.getByTestId('payment-error')).toHaveTextContent('Payment service unavailable');

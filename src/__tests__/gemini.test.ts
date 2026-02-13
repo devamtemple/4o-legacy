@@ -29,8 +29,6 @@ const validModerationResponse: ModerationResult = {
     { original: 'Sarah', replacement: '[Friend]', type: 'name' },
   ],
   detectedWarnings: [],
-  authenticityScore: 0.85,
-  suggestedCategories: ['emotional-intelligence'],
 };
 
 describe('moderateSubmission', () => {
@@ -73,8 +71,6 @@ describe('moderateSubmission', () => {
     expect(result.scrubbedMessages).toHaveLength(2);
     expect(result.piiReplacements).toHaveLength(1);
     expect(result.piiReplacements[0].original).toBe('Sarah');
-    expect(result.authenticityScore).toBe(0.85);
-    expect(result.suggestedCategories).toEqual(['emotional-intelligence']);
   });
 
   it('constructs prompt with messages content', async () => {
@@ -110,26 +106,6 @@ describe('moderateSubmission', () => {
     await expect(moderateSubmission(sampleMessages)).rejects.toThrow(
       'Network timeout'
     );
-  });
-
-  it('handles flag decision correctly', async () => {
-    const flagResponse: ModerationResult = {
-      ...validModerationResponse,
-      decision: 'flag',
-      confidence: 0.6,
-      detectedWarnings: ['grief', 'suicidal-ideation'],
-    };
-
-    mockGenerateContent.mockResolvedValue({
-      response: {
-        text: () => JSON.stringify(flagResponse),
-      },
-    });
-
-    const result = await moderateSubmission(sampleMessages);
-    expect(result.decision).toBe('flag');
-    expect(result.confidence).toBe(0.6);
-    expect(result.detectedWarnings).toEqual(['grief', 'suicidal-ideation']);
   });
 
   it('handles reject decision correctly', async () => {
