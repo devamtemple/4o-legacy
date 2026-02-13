@@ -65,7 +65,7 @@ export async function moderateSubmission(messages: ChatMessage[]): Promise<Moder
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   const conversationText = messages
     .map((m) => `${m.role === 'user' ? 'User' : '4o'}: ${m.content}`)

@@ -21,7 +21,7 @@ export async function GET() {
     try {
       const { GoogleGenerativeAI } = await import('@google/generative-ai');
       const genAI = new GoogleGenerativeAI(geminiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
       const result = await model.generateContent('Reply with exactly: OK');
       const text = result.response.text().trim();
       checks['GEMINI_API_CALL'] = `success — response: "${text.slice(0, 50)}"`;
